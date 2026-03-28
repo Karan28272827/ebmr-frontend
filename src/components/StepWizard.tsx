@@ -50,7 +50,7 @@ export default function StepWizard({ steps, userRole, onComplete, onSkip, loadin
   const stepsItems = steps.map((s) => ({
     key: s.step_number,
     title: s.title,
-    status: s.status === 'COMPLETED' ? 'finish' : s.status === 'SKIPPED' ? 'wait' : 'process',
+    status: (s.status === 'COMPLETED' ? 'finish' : s.status === 'SKIPPED' ? 'wait' : 'process') as 'finish' | 'wait' | 'process' | 'error',
     icon: STATUS_ICON[s.status],
   }));
 
