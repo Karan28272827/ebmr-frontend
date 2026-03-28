@@ -186,6 +186,7 @@ export default function BatchDetail() {
               <StepWizard
                 steps={steps}
                 userRole={user?.role || ''}
+                batchState={batch.state}
                 onComplete={completeStep}
                 onSkip={skipStep}
                 loading={actionLoading}

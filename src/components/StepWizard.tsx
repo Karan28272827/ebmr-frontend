@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 interface StepWizardProps {
   steps: any[];
   userRole: string;
+  batchState: string;
   onComplete: (stepNumber: number, actualValues: any) => Promise<void>;
   onSkip: (stepNumber: number) => Promise<void>;
   loading?: boolean;
@@ -21,7 +22,9 @@ const ROLE_LEVEL: Record<string, number> = {
   BATCH_OPERATOR: 1, SUPERVISOR: 2, QA_REVIEWER: 3, QA_MANAGER: 4, QUALIFIED_PERSON: 5,
 };
 
-export default function StepWizard({ steps, userRole, onComplete, onSkip, loading }: StepWizardProps) {
+const STEP_EXECUTABLE_STATES = ['LINE_CLEARANCE', 'IN_PROGRESS'];
+
+export default function StepWizard({ steps, userRole, batchState, onComplete, onSkip, loading }: StepWizardProps) {
   const [form] = Form.useForm();
   const [stepError, setStepError] = useState<string | null>(null);
 
@@ -58,6 +61,16 @@ export default function StepWizard({ steps, userRole, onComplete, onSkip, loadin
     <div>
       <Steps current={activeIdx >= 0 ? activeIdx : steps.length} items={stepsItems} style={{ marginBottom: 24 }} />
 
+      {!STEP_EXECUTABLE_STATES.includes(batchState) && (
+        <Alert
+          style={{ marginBottom: 16 }}
+          type="warning"
+          showIcon
+          message={`Steps cannot be completed while batch is in ${batchState.replace(/_/g, ' ')} state.`}
+          description="Use the transition buttons above to move the batch to LINE CLEARANCE or IN PROGRESS first."
+        />
+      )}
+
       {activeStep ? (
         <Card title={`Step ${activeStep.step_number}: ${activeStep.title}`} style={{ marginBottom: 16 }}>
           <Typography.Paragraph type="secondary">{activeStep.instructions}</Typography.Paragraph>
@@ -80,11 +93,11 @@ export default function StepWizard({ steps, userRole, onComplete, onSkip, loadin
             ))}
           </Form>
           <Space>
-            <Button type="primary" onClick={handleSubmit} loading={loading}>
+            <Button type="primary" onClick={handleSubmit} loading={loading} disabled={!STEP_EXECUTABLE_STATES.includes(batchState)}>
               Complete Step
             </Button>
             {canSkip && (
-              <Button onClick={handleSkip} loading={loading}>
+              <Button onClick={handleSkip} loading={loading} disabled={!STEP_EXECUTABLE_STATES.includes(batchState)}>
                 Skip Step
               </Button>
             )}
