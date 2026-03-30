@@ -2,13 +2,15 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Card, Tag, Button, Space, Typography, Tabs, Alert, Descriptions, List, message, Spin,
+  Table, Form, InputNumber, Input, Modal, Progress,
 } from 'antd';
-import { ArrowLeftOutlined, AuditOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, AuditOutlined, BarcodeOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { authApi } from '../api/axios';
 import { useAppSelector } from '../store/hooks';
 import StepWizard from '../components/StepWizard';
 import ESignatureModal from '../components/ESignatureModal';
+import BarcodeLabel from '../components/BarcodeLabel';
 
 const STATE_COLOR: Record<string, string> = {
   DRAFT: 'default', INITIATED: 'blue', LINE_CLEARANCE: 'cyan', IN_PROGRESS: 'processing',
@@ -56,6 +58,12 @@ export default function BatchDetail() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [sigModal, setSigModal] = useState<{ open: boolean; transition?: any }>({ open: false });
+  const [bomData, setBomData] = useState<any[]>([]);
+  const [barcodeVisible, setBarcodeVisible] = useState(false);
+  const [issueModal, setIssueModal] = useState(false);
+  const [issueForm] = Form.useForm();
+  const [issuanceModal, setIssuanceModal] = useState<any>(null);
+  const [issuanceForm] = Form.useForm();
 
   const loadBatch = useCallback(async () => {
     try {
@@ -67,6 +75,16 @@ export default function BatchDetail() {
   }, [id]);
 
   useEffect(() => { loadBatch(); }, [loadBatch]);
+
+  const loadBoM = useCallback(async () => {
+    if (!id) return;
+    try {
+      const res = await authApi.get(`/bom/batches/${id}`);
+      setBomData(res.data);
+    } catch { /* template may have no BoM */ }
+  }, [id]);
+
+  useEffect(() => { loadBoM(); }, [loadBoM]);
 
   const canDo = (minRole: string) => (ROLE_LEVEL[user?.role || ''] || 0) >= (ROLE_LEVEL[minRole] || 0);
 
@@ -130,6 +148,33 @@ export default function BatchDetail() {
     }
   };
 
+  const raiseIssue = async (values: any) => {
+    try {
+      await authApi.post('/issues', { ...values, batchId: id });
+      message.success('Issue raised');
+      setIssueModal(false);
+      issueForm.resetFields();
+    } catch (err: any) {
+      message.error(err.response?.data?.message || 'Failed');
+    }
+  };
+
+  const recordIssuance = async (values: any) => {
+    try {
+      await authApi.post(`/bom/batches/${id}/issuances`, {
+        bomItemId: issuanceModal.bomItem.id,
+        lotNumber: values.lotNumber,
+        issuedQty: values.issuedQty,
+      });
+      message.success('Issuance recorded');
+      setIssuanceModal(null);
+      issuanceForm.resetFields();
+      loadBoM();
+    } catch (err: any) {
+      message.error(err.response?.data?.message || 'Failed');
+    }
+  };
+
   if (loading) return <Spin style={{ display: 'block', marginTop: 100, textAlign: 'center' }} />;
   if (!batch) return <Alert message="Batch not found" type="error" />;
 
@@ -141,6 +186,8 @@ export default function BatchDetail() {
       <Space style={{ marginBottom: 16 }}>
         <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/dashboard')}>Back</Button>
         <Button icon={<AuditOutlined />} onClick={() => navigate(`/batches/${id}/audit`)}>Audit Trail</Button>
+        <Button icon={<BarcodeOutlined />} onClick={() => setBarcodeVisible(true)}>Barcode</Button>
+        <Button icon={<ExclamationCircleOutlined />} onClick={() => setIssueModal(true)}>Raise Issue</Button>
       </Space>
 
       <Card
@@ -212,6 +259,53 @@ export default function BatchDetail() {
             ),
           },
           {
+            key: 'materials',
+            label: `Materials (${bomData.length})`,
+            children: (
+              <Table
+                dataSource={bomData}
+                rowKey={(r: any) => r.bomItem.id}
+                size="small"
+                pagination={false}
+                locale={{ emptyText: 'No BoM defined for this template' }}
+                columns={[
+                  {
+                    title: 'Code',
+                    dataIndex: ['bomItem', 'material', 'materialCode'],
+                    render: (c: string) => <Typography.Text code>{c}</Typography.Text>,
+                  },
+                  { title: 'Material', dataIndex: ['bomItem', 'material', 'materialName'] },
+                  {
+                    title: 'Required',
+                    render: (_: any, r: any) => `${r.requiredQty} ${r.bomItem.material?.unit || ''}`,
+                  },
+                  {
+                    title: 'Issued',
+                    render: (_: any, r: any) => `${r.totalIssued} ${r.bomItem.material?.unit || ''}`,
+                  },
+                  {
+                    title: 'Status',
+                    dataIndex: 'status',
+                    render: (s: string) => (
+                      <Tag color={s === 'ISSUED' ? 'success' : s === 'PARTIAL' ? 'warning' : 'default'}>{s}</Tag>
+                    ),
+                  },
+                  {
+                    title: '',
+                    render: (_: any, r: any) => (
+                      <Button
+                        size="small"
+                        onClick={() => { setIssuanceModal(r); issuanceForm.setFieldsValue({ issuedQty: r.requiredQty }); }}
+                      >
+                        Record Issuance
+                      </Button>
+                    ),
+                  },
+                ]}
+              />
+            ),
+          },
+          {
             key: 'deviations',
             label: `Deviations (${(batch.deviations || []).length})`,
             children: (
@@ -251,6 +345,71 @@ export default function BatchDetail() {
         onConfirm={(sig) => doTransition(sigModal.transition, sig)}
         onCancel={() => setSigModal({ open: false })}
       />
+
+      {/* Barcode modal */}
+      <Modal
+        title={`Batch Barcode — ${batch.batchNumber}`}
+        open={barcodeVisible}
+        onCancel={() => setBarcodeVisible(false)}
+        footer={[
+          <Button key="print" onClick={() => window.print()}>Print</Button>,
+          <Button key="close" onClick={() => setBarcodeVisible(false)}>Close</Button>,
+        ]}
+        centered
+      >
+        <Space direction="vertical" align="center" style={{ width: '100%', padding: '16px 0' }}>
+          <BarcodeLabel value={batch.batchNumber} label={`${batch.productName} · ${batch.batchSize} kg`} height={70} />
+          <Typography.Text type="secondary">{batch.state.replace(/_/g, ' ')}</Typography.Text>
+        </Space>
+      </Modal>
+
+      {/* Raise Issue modal */}
+      <Modal
+        title="Raise Production Issue"
+        open={issueModal}
+        onOk={() => issueForm.validateFields().then(raiseIssue)}
+        onCancel={() => { setIssueModal(false); issueForm.resetFields(); }}
+        okText="Raise Issue"
+      >
+        <Form form={issueForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+            <Input placeholder="Brief description" />
+          </Form.Item>
+          <Form.Item name="description" label="Description" rules={[{ required: true }]}>
+            <Input.TextArea rows={3} placeholder="Detailed description..." />
+          </Form.Item>
+          <Form.Item name="severity" label="Severity" rules={[{ required: true }]}>
+            <select style={{ width: '100%', height: 32, border: '1px solid #d9d9d9', borderRadius: 6, padding: '0 8px' }}>
+              <option value="">Select...</option>
+              {['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Record Issuance modal */}
+      <Modal
+        title={issuanceModal ? `Record Issuance — ${issuanceModal.bomItem?.material?.materialName}` : ''}
+        open={!!issuanceModal}
+        onOk={() => issuanceForm.validateFields().then(recordIssuance)}
+        onCancel={() => { setIssuanceModal(null); issuanceForm.resetFields(); }}
+        okText="Record"
+      >
+        {issuanceModal && (
+          <Form form={issuanceForm} layout="vertical" style={{ marginTop: 16 }}>
+            <Descriptions size="small" column={2} style={{ marginBottom: 16 }}>
+              <Descriptions.Item label="Required">{issuanceModal.requiredQty} {issuanceModal.bomItem?.material?.unit}</Descriptions.Item>
+              <Descriptions.Item label="Already Issued">{issuanceModal.totalIssued} {issuanceModal.bomItem?.material?.unit}</Descriptions.Item>
+            </Descriptions>
+            <Form.Item name="lotNumber" label="Lot Number" rules={[{ required: true }]}>
+              <Input placeholder="e.g. LOT-2024-0321-A" />
+            </Form.Item>
+            <Form.Item name="issuedQty" label={`Issued Quantity (${issuanceModal.bomItem?.material?.unit})`} rules={[{ required: true }]}>
+              <InputNumber min={0} step={0.001} style={{ width: '100%' }} />
+            </Form.Item>
+          </Form>
+        )}
+      </Modal>
     </div>
   );
 }

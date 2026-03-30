@@ -1,14 +1,20 @@
-import React from 'react';
-import { Layout, Menu, Button, Space, Tag, Typography } from 'antd';
+import React, { useState } from 'react';
+import { Layout, Menu, Button, Space, Tag, Typography, message } from 'antd';
 import {
   DashboardOutlined,
   FileTextOutlined,
   WarningOutlined,
   LogoutOutlined,
+  ExperimentOutlined,
+  BarsOutlined,
+  ScanOutlined,
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { logout } from '../store/authSlice';
+import BarcodeScanner from './BarcodeScanner';
+import { authApi } from '../api/axios';
 
 const { Header, Sider, Content } = Layout;
 
@@ -25,12 +31,34 @@ export default function AppLayout() {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((s) => s.auth);
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const selectedKey = location.pathname.startsWith('/deviations')
     ? 'deviations'
-    : location.pathname.startsWith('/batches') || location.pathname === '/dashboard'
-    ? 'dashboard'
+    : location.pathname.startsWith('/issues')
+    ? 'issues'
+    : location.pathname.startsWith('/materials')
+    ? 'materials'
+    : location.pathname.startsWith('/bom')
+    ? 'bom'
     : 'dashboard';
+
+  const handleScanned = async (code: string) => {
+    setScannerOpen(false);
+    // Try batch lookup first (by batchNumber), then material (by code)
+    try {
+      const batchesRes = await authApi.get('/batches');
+      const match = batchesRes.data.find((b: any) => b.batchNumber === code);
+      if (match) { navigate(`/batches/${match.id}`); return; }
+    } catch { /* ignore */ }
+    try {
+      await authApi.get(`/materials/barcode/${code}`);
+      navigate(`/materials`);
+      message.info(`Material found: ${code}`);
+      return;
+    } catch { /* ignore */ }
+    message.warning(`No batch or material found for code: ${code}`);
+  };
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -43,8 +71,11 @@ export default function AppLayout() {
           mode="inline"
           selectedKeys={[selectedKey]}
           items={[
-            { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard', onClick: () => navigate('/dashboard') },
+            { key: 'dashboard', icon: <DashboardOutlined />, label: 'Batches', onClick: () => navigate('/dashboard') },
             { key: 'deviations', icon: <WarningOutlined />, label: 'Deviations', onClick: () => navigate('/deviations') },
+            { key: 'issues', icon: <ExclamationCircleOutlined />, label: 'Issues', onClick: () => navigate('/issues') },
+            { key: 'materials', icon: <ExperimentOutlined />, label: 'Materials', onClick: () => navigate('/materials') },
+            { key: 'bom', icon: <BarsOutlined />, label: 'Bill of Materials', onClick: () => navigate('/bom') },
           ]}
         />
       </Sider>
@@ -54,6 +85,7 @@ export default function AppLayout() {
             Electronic Batch Manufacturing Record
           </Typography.Text>
           <Space>
+            <Button icon={<ScanOutlined />} onClick={() => setScannerOpen(true)}>Scan</Button>
             {user && (
               <>
                 <Typography.Text>{user.name}</Typography.Text>
@@ -69,6 +101,8 @@ export default function AppLayout() {
           <Outlet />
         </Content>
       </Layout>
+
+      <BarcodeScanner open={scannerOpen} onClose={() => setScannerOpen(false)} onScanned={handleScanned} />
     </Layout>
   );
 }

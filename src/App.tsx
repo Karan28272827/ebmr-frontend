@@ -11,6 +11,10 @@ import BatchDetail from './pages/BatchDetail';
 import BatchAudit from './pages/BatchAudit';
 import Deviations from './pages/Deviations';
 import DeviationDetail from './pages/DeviationDetail';
+import Issues from './pages/Issues';
+import IssueDetail from './pages/IssueDetail';
+import Materials from './pages/Materials';
+import BomDefinition from './pages/BomDefinition';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { token, loading } = useAppSelector((s) => s.auth);
@@ -43,6 +47,10 @@ export default function App() {
         <Route path="batches/:id/audit" element={<BatchAudit />} />
         <Route path="deviations" element={<Deviations />} />
         <Route path="deviations/:id" element={<DeviationDetail />} />
+        <Route path="issues" element={<Issues />} />
+        <Route path="issues/:id" element={<IssueDetail />} />
+        <Route path="materials" element={<Materials />} />
+        <Route path="bom" element={<BomDefinition />} />
       </Route>
     </Routes>
   );
