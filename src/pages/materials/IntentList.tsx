@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Space, Modal, Form, Input, InputNumber, Select, DatePicker,
-  Typography, message,
+  Card,
+  Table,
+  Tag,
+  Button,
+  Space,
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  DatePicker,
+  Typography,
+  message,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -134,7 +145,10 @@ export default function IntentList() {
         title="Raise Material Intent"
         open={modalOpen}
         onOk={handleCreate}
-        onCancel={() => { setModalOpen(false); form.resetFields(); }}
+        onCancel={() => {
+          setModalOpen(false);
+          form.resetFields();
+        }}
         confirmLoading={saving}
         okText="Raise Intent"
         width={560}
@@ -163,12 +177,7 @@ export default function IntentList() {
               rules={[{ required: true, message: 'Quantity is required' }]}
               style={{ flex: 1, marginBottom: 0 }}
             >
-              <InputNumber
-                min={0}
-                step={0.001}
-                style={{ width: '100%' }}
-                placeholder="0.00"
-              />
+              <InputNumber min={0} step={0.001} style={{ width: '100%' }} placeholder="0.00" />
             </Form.Item>
             <Form.Item
               name="unit"
@@ -178,7 +187,9 @@ export default function IntentList() {
             >
               <Select placeholder="Unit">
                 {UNITS.map((u) => (
-                  <Select.Option key={u} value={u}>{u}</Select.Option>
+                  <Select.Option key={u} value={u}>
+                    {u}
+                  </Select.Option>
                 ))}
               </Select>
             </Form.Item>
@@ -194,7 +205,10 @@ export default function IntentList() {
           </Form.Item>
 
           <Form.Item name="reason" label="Reason / Purpose">
-            <Input.TextArea rows={3} placeholder="Brief description of why this material is needed..." />
+            <Input.TextArea
+              rows={3}
+              placeholder="Brief description of why this material is needed..."
+            />
           </Form.Item>
         </Form>
       </Modal>

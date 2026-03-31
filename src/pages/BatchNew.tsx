@@ -48,7 +48,9 @@ export default function BatchNew() {
             <InputNumber min={1} style={{ width: '100%' }} />
           </Form.Item>
           <Space>
-            <Button type="primary" htmlType="submit" loading={loading}>Create Batch</Button>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Create Batch
+            </Button>
             <Button onClick={() => navigate('/dashboard')}>Cancel</Button>
           </Space>
         </Form>

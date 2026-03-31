@@ -1,7 +1,21 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-  Table, Tag, Button, Space, Select, Input, Card, Row, Col, Spin, Typography,
-  Modal, Form, InputNumber, message, Alert,
+  Table,
+  Tag,
+  Button,
+  Space,
+  Select,
+  Input,
+  Card,
+  Row,
+  Col,
+  Spin,
+  Typography,
+  Modal,
+  Form,
+  InputNumber,
+  message,
+  Alert,
 } from 'antd';
 import { PlusOutlined, EyeOutlined, ExperimentOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -61,7 +75,9 @@ export default function BomList() {
     }
   }, [productCodeSearch, statusFilter]);
 
-  useEffect(() => { loadBoms(); }, [loadBoms]);
+  useEffect(() => {
+    loadBoms();
+  }, [loadBoms]);
 
   const openSimulate = (bom: any) => {
     setSimulateBomId(bom.id);
@@ -107,7 +123,9 @@ export default function BomList() {
       dataIndex: 'scaled_qty',
       key: 'scaled_qty',
       render: (v: number, r: any) => (
-        <Typography.Text strong>{v} {r.unit}</Typography.Text>
+        <Typography.Text strong>
+          {v} {r.unit}
+        </Typography.Text>
       ),
     },
     {
@@ -120,9 +138,7 @@ export default function BomList() {
       title: 'Stock Status',
       dataIndex: 'stock_status',
       key: 'stock_status',
-      render: (v: string) => (
-        <Tag color={STOCK_STATUS_TAG[v] || 'default'}>{v}</Tag>
-      ),
+      render: (v: string) => <Tag color={STOCK_STATUS_TAG[v] || 'default'}>{v}</Tag>,
     },
   ];
 
@@ -145,27 +161,17 @@ export default function BomList() {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (v: string) => (
-        <Tag color={STATUS_COLOR[v] || 'default'}>{v}</Tag>
-      ),
+      render: (v: string) => <Tag color={STATUS_COLOR[v] || 'default'}>{v}</Tag>,
     },
     {
       title: 'Actions',
       key: 'actions',
       render: (_: any, r: any) => (
         <Space size="small">
-          <Button
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => navigate(`/bom/${r.id}`)}
-          >
+          <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/bom/${r.id}`)}>
             {screens.md ? 'View' : ''}
           </Button>
-          <Button
-            size="small"
-            icon={<ExperimentOutlined />}
-            onClick={() => openSimulate(r)}
-          >
+          <Button size="small" icon={<ExperimentOutlined />} onClick={() => openSimulate(r)}>
             {screens.md ? 'Simulate' : ''}
           </Button>
         </Space>
@@ -205,13 +211,20 @@ export default function BomList() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
-        <Typography.Title level={4} style={{ margin: 0 }}>Bill of Materials</Typography.Title>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => navigate('/bom/new')}
-        >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 16,
+          flexWrap: 'wrap',
+          gap: 8,
+        }}
+      >
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          Bill of Materials
+        </Typography.Title>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/bom/new')}>
           New BOM
         </Button>
       </div>
@@ -242,7 +255,9 @@ export default function BomList() {
             />
           </Col>
           <Col xs={24} sm={24} md={4}>
-            <Button onClick={loadBoms} loading={loading}>Refresh</Button>
+            <Button onClick={loadBoms} loading={loading}>
+              Refresh
+            </Button>
           </Col>
         </Row>
       </Card>
@@ -276,7 +291,11 @@ export default function BomList() {
       <Modal
         title={`Simulate BOM: ${simulateBomCode}`}
         open={simulateModalOpen}
-        onCancel={() => { setSimulateModalOpen(false); setSimResult(null); simForm.resetFields(); }}
+        onCancel={() => {
+          setSimulateModalOpen(false);
+          setSimResult(null);
+          simForm.resetFields();
+        }}
         footer={null}
         width={screens.md ? 900 : '100%'}
         style={screens.md ? {} : { top: 0, margin: 0, padding: 0, maxWidth: '100vw' }}
@@ -289,7 +308,10 @@ export default function BomList() {
           <Form.Item
             name="targetBatchSize"
             label="Target Batch Size"
-            rules={[{ required: true, message: 'Please enter a batch size' }, { type: 'number', min: 0.001, message: 'Must be > 0' }]}
+            rules={[
+              { required: true, message: 'Please enter a batch size' },
+              { type: 'number', min: 0.001, message: 'Must be > 0' },
+            ]}
           >
             <InputNumber min={0.001} step={1} style={{ width: 200 }} placeholder="e.g. 500" />
           </Form.Item>

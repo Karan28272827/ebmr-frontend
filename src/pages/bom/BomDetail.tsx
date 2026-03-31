@@ -1,10 +1,28 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Card, Tag, Button, Space, Typography, Tabs, Alert, Descriptions, message, Spin,
-  Table, Form, InputNumber, Modal, Popconfirm,
+  Card,
+  Tag,
+  Button,
+  Space,
+  Typography,
+  Tabs,
+  Alert,
+  Descriptions,
+  message,
+  Spin,
+  Table,
+  Form,
+  InputNumber,
+  Modal,
+  Popconfirm,
 } from 'antd';
-import { ArrowLeftOutlined, ExperimentOutlined, CheckCircleOutlined, StopOutlined } from '@ant-design/icons';
+import {
+  ArrowLeftOutlined,
+  ExperimentOutlined,
+  CheckCircleOutlined,
+  StopOutlined,
+} from '@ant-design/icons';
 import { Grid } from 'antd';
 import { authApi } from '../../api/axios';
 import { useAppSelector } from '../../store/hooks';
@@ -70,7 +88,9 @@ export default function BomDetail() {
     }
   }, [id]);
 
-  useEffect(() => { loadBom(); }, [loadBom]);
+  useEffect(() => {
+    loadBom();
+  }, [loadBom]);
 
   const changeStatus = async (status: 'APPROVED' | 'RETIRED') => {
     setActionLoading(true);
@@ -128,9 +148,7 @@ export default function BomDetail() {
       title: 'Type',
       dataIndex: 'component_type',
       key: 'component_type',
-      render: (v: string) => (
-        <Tag color={COMPONENT_TYPE_COLOR[v] || 'default'}>{v}</Tag>
-      ),
+      render: (v: string) => <Tag color={COMPONENT_TYPE_COLOR[v] || 'default'}>{v}</Tag>,
     },
     {
       title: 'Qty / Base Batch',
@@ -141,7 +159,7 @@ export default function BomDetail() {
       title: 'Overage %',
       dataIndex: 'overage_pct',
       key: 'overage_pct',
-      render: (v: number) => v != null ? `${v}%` : '—',
+      render: (v: number) => (v != null ? `${v}%` : '—'),
     },
     {
       title: 'Critical',
@@ -176,7 +194,7 @@ export default function BomDetail() {
       title: 'Duration (min)',
       dataIndex: 'duration_min',
       key: 'duration_min',
-      render: (v: number) => v != null ? `${v} min` : '—',
+      render: (v: number) => (v != null ? `${v} min` : '—'),
     },
     {
       title: 'Critical Step',
@@ -237,7 +255,9 @@ export default function BomDetail() {
       dataIndex: 'scaled_qty',
       key: 'scaled_qty',
       render: (v: number, r: any) => (
-        <Typography.Text strong>{v} {r.unit}</Typography.Text>
+        <Typography.Text strong>
+          {v} {r.unit}
+        </Typography.Text>
       ),
     },
     {
@@ -250,9 +270,7 @@ export default function BomDetail() {
       title: 'Stock Status',
       dataIndex: 'stock_status',
       key: 'stock_status',
-      render: (v: string) => (
-        <Tag color={STOCK_STATUS_TAG[v] || 'default'}>{v}</Tag>
-      ),
+      render: (v: string) => <Tag color={STOCK_STATUS_TAG[v] || 'default'}>{v}</Tag>,
     },
   ];
 
@@ -407,7 +425,9 @@ export default function BomDetail() {
         style={{ marginBottom: 16 }}
         title={
           <Space wrap>
-            <Typography.Text strong style={{ fontSize: 16 }}>{bom.bom_code}</Typography.Text>
+            <Typography.Text strong style={{ fontSize: 16 }}>
+              {bom.bom_code}
+            </Typography.Text>
             <Tag color={STATUS_COLOR[bom.status] || 'default'}>{bom.status}</Tag>
           </Space>
         }
@@ -421,11 +441,7 @@ export default function BomDetail() {
                 onConfirm={() => changeStatus('APPROVED')}
                 okText="Approve"
               >
-                <Button
-                  type="primary"
-                  icon={<CheckCircleOutlined />}
-                  loading={actionLoading}
-                >
+                <Button type="primary" icon={<CheckCircleOutlined />} loading={actionLoading}>
                   Approve
                 </Button>
               </Popconfirm>
@@ -439,11 +455,7 @@ export default function BomDetail() {
                 okText="Retire"
                 okButtonProps={{ danger: true }}
               >
-                <Button
-                  danger
-                  icon={<StopOutlined />}
-                  loading={actionLoading}
-                >
+                <Button danger icon={<StopOutlined />} loading={actionLoading}>
                   Retire
                 </Button>
               </Popconfirm>
@@ -451,10 +463,7 @@ export default function BomDetail() {
           </Space>
         }
       >
-        <Descriptions
-          column={screens.md ? 3 : 1}
-          size="small"
-        >
+        <Descriptions column={screens.md ? 3 : 1} size="small">
           <Descriptions.Item label="Product Name">{bom.product_name}</Descriptions.Item>
           <Descriptions.Item label="Variant">{bom.product_variant || '—'}</Descriptions.Item>
           <Descriptions.Item label="Version">v{bom.version}</Descriptions.Item>

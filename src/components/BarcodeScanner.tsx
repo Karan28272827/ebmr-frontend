@@ -41,7 +41,9 @@ export default function BarcodeScanner({ open, onClose, onScanned }: BarcodeScan
           stopScanner();
           onScanned(decodedText.trim());
         },
-        () => { /* ignore decode errors */ },
+        () => {
+          /* ignore decode errors */
+        },
       );
     } catch (e: any) {
       setScannerError('Camera not available. Use manual entry below.');
@@ -65,9 +67,16 @@ export default function BarcodeScanner({ open, onClose, onScanned }: BarcodeScan
 
   return (
     <Modal
-      title={<Space><ScanOutlined /> Scan Barcode</Space>}
+      title={
+        <Space>
+          <ScanOutlined /> Scan Barcode
+        </Space>
+      }
       open={open}
-      onCancel={() => { stopScanner(); onClose(); }}
+      onCancel={() => {
+        stopScanner();
+        onClose();
+      }}
       footer={null}
       width={420}
       destroyOnClose
@@ -78,7 +87,9 @@ export default function BarcodeScanner({ open, onClose, onScanned }: BarcodeScan
             Start Camera Scanner
           </Button>
         ) : (
-          <Button block onClick={stopScanner}>Stop Scanner</Button>
+          <Button block onClick={stopScanner}>
+            Stop Scanner
+          </Button>
         )}
 
         <div id={containerId} style={{ width: '100%' }} />

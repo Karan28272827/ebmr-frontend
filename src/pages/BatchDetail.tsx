@@ -1,10 +1,30 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Card, Tag, Button, Space, Typography, Tabs, Alert, Descriptions, List, message, Spin,
-  Table, Form, InputNumber, Input, Modal, Progress,
+  Card,
+  Tag,
+  Button,
+  Space,
+  Typography,
+  Tabs,
+  Alert,
+  Descriptions,
+  List,
+  message,
+  Spin,
+  Table,
+  Form,
+  InputNumber,
+  Input,
+  Modal,
+  Progress,
 } from 'antd';
-import { ArrowLeftOutlined, AuditOutlined, BarcodeOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import {
+  ArrowLeftOutlined,
+  AuditOutlined,
+  BarcodeOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { authApi } from '../api/axios';
 import { useAppSelector } from '../store/hooks';
@@ -13,40 +33,144 @@ import ESignatureModal from '../components/ESignatureModal';
 import BarcodeLabel from '../components/BarcodeLabel';
 
 const STATE_COLOR: Record<string, string> = {
-  DRAFT: 'default', INITIATED: 'blue', LINE_CLEARANCE: 'cyan', IN_PROGRESS: 'processing',
-  DEVIATION: 'error', HOLD: 'warning', PENDING_QA: 'orange', PENDING_QP: 'purple',
-  RELEASED: 'success', REJECTED: 'red',
+  DRAFT: 'default',
+  INITIATED: 'blue',
+  LINE_CLEARANCE: 'cyan',
+  IN_PROGRESS: 'processing',
+  DEVIATION: 'error',
+  HOLD: 'warning',
+  PENDING_QA: 'orange',
+  PENDING_QP: 'purple',
+  RELEASED: 'success',
+  REJECTED: 'red',
 };
 
 const ROLE_LEVEL: Record<string, number> = {
-  BATCH_OPERATOR: 1, SUPERVISOR: 2, QA_REVIEWER: 3, QA_MANAGER: 4, QUALIFIED_PERSON: 5,
+  BATCH_OPERATOR: 1,
+  SUPERVISOR: 2,
+  QA_REVIEWER: 3,
+  QA_MANAGER: 4,
+  QUALIFIED_PERSON: 5,
 };
 
 // Which transitions are available per state, and who can do them
-const TRANSITIONS: Record<string, { label: string; toState: string; minRole: string; critical: boolean; meaning: string }[]> = {
-  DRAFT: [{ label: 'Initiate Batch', toState: 'INITIATED', minRole: 'BATCH_OPERATOR', critical: false, meaning: 'Performed By' }],
-  INITIATED: [{ label: 'Start Line Clearance', toState: 'LINE_CLEARANCE', minRole: 'SUPERVISOR', critical: true, meaning: 'Verified By' }],
-  LINE_CLEARANCE: [{ label: 'Begin Production', toState: 'IN_PROGRESS', minRole: 'SUPERVISOR', critical: true, meaning: 'Verified By' }],
+const TRANSITIONS: Record<
+  string,
+  { label: string; toState: string; minRole: string; critical: boolean; meaning: string }[]
+> = {
+  DRAFT: [
+    {
+      label: 'Initiate Batch',
+      toState: 'INITIATED',
+      minRole: 'BATCH_OPERATOR',
+      critical: false,
+      meaning: 'Performed By',
+    },
+  ],
+  INITIATED: [
+    {
+      label: 'Start Line Clearance',
+      toState: 'LINE_CLEARANCE',
+      minRole: 'SUPERVISOR',
+      critical: true,
+      meaning: 'Verified By',
+    },
+  ],
+  LINE_CLEARANCE: [
+    {
+      label: 'Begin Production',
+      toState: 'IN_PROGRESS',
+      minRole: 'SUPERVISOR',
+      critical: true,
+      meaning: 'Verified By',
+    },
+  ],
   IN_PROGRESS: [
-    { label: 'Submit for QA Review', toState: 'PENDING_QA', minRole: 'SUPERVISOR', critical: true, meaning: 'Verified By' },
-    { label: 'Place on Hold', toState: 'HOLD', minRole: 'QA_REVIEWER', critical: false, meaning: 'Approved By' },
-    { label: 'Mark Deviation', toState: 'DEVIATION', minRole: 'QA_REVIEWER', critical: false, meaning: 'Approved By' },
+    {
+      label: 'Submit for QA Review',
+      toState: 'PENDING_QA',
+      minRole: 'SUPERVISOR',
+      critical: true,
+      meaning: 'Verified By',
+    },
+    {
+      label: 'Place on Hold',
+      toState: 'HOLD',
+      minRole: 'QA_REVIEWER',
+      critical: false,
+      meaning: 'Approved By',
+    },
+    {
+      label: 'Mark Deviation',
+      toState: 'DEVIATION',
+      minRole: 'QA_REVIEWER',
+      critical: false,
+      meaning: 'Approved By',
+    },
   ],
   DEVIATION: [
-    { label: 'Resume Production', toState: 'IN_PROGRESS', minRole: 'QA_REVIEWER', critical: false, meaning: 'Approved By' },
-    { label: 'Place on Hold', toState: 'HOLD', minRole: 'QA_REVIEWER', critical: false, meaning: 'Approved By' },
+    {
+      label: 'Resume Production',
+      toState: 'IN_PROGRESS',
+      minRole: 'QA_REVIEWER',
+      critical: false,
+      meaning: 'Approved By',
+    },
+    {
+      label: 'Place on Hold',
+      toState: 'HOLD',
+      minRole: 'QA_REVIEWER',
+      critical: false,
+      meaning: 'Approved By',
+    },
   ],
   HOLD: [
-    { label: 'Resume Production', toState: 'IN_PROGRESS', minRole: 'QA_REVIEWER', critical: false, meaning: 'Approved By' },
-    { label: 'Mark Deviation', toState: 'DEVIATION', minRole: 'QA_REVIEWER', critical: false, meaning: 'Approved By' },
+    {
+      label: 'Resume Production',
+      toState: 'IN_PROGRESS',
+      minRole: 'QA_REVIEWER',
+      critical: false,
+      meaning: 'Approved By',
+    },
+    {
+      label: 'Mark Deviation',
+      toState: 'DEVIATION',
+      minRole: 'QA_REVIEWER',
+      critical: false,
+      meaning: 'Approved By',
+    },
   ],
   PENDING_QA: [
-    { label: 'Approve — Send to QP', toState: 'PENDING_QP', minRole: 'QA_MANAGER', critical: true, meaning: 'Approved By' },
-    { label: 'Place on Hold', toState: 'HOLD', minRole: 'QA_REVIEWER', critical: false, meaning: 'Approved By' },
+    {
+      label: 'Approve — Send to QP',
+      toState: 'PENDING_QP',
+      minRole: 'QA_MANAGER',
+      critical: true,
+      meaning: 'Approved By',
+    },
+    {
+      label: 'Place on Hold',
+      toState: 'HOLD',
+      minRole: 'QA_REVIEWER',
+      critical: false,
+      meaning: 'Approved By',
+    },
   ],
   PENDING_QP: [
-    { label: 'Release Batch', toState: 'RELEASED', minRole: 'QUALIFIED_PERSON', critical: true, meaning: 'Released By' },
-    { label: 'Reject Batch', toState: 'REJECTED', minRole: 'QUALIFIED_PERSON', critical: true, meaning: 'Approved By' },
+    {
+      label: 'Release Batch',
+      toState: 'RELEASED',
+      minRole: 'QUALIFIED_PERSON',
+      critical: true,
+      meaning: 'Released By',
+    },
+    {
+      label: 'Reject Batch',
+      toState: 'REJECTED',
+      minRole: 'QUALIFIED_PERSON',
+      critical: true,
+      meaning: 'Approved By',
+    },
   ],
 };
 
@@ -74,19 +198,26 @@ export default function BatchDetail() {
     }
   }, [id]);
 
-  useEffect(() => { loadBatch(); }, [loadBatch]);
+  useEffect(() => {
+    loadBatch();
+  }, [loadBatch]);
 
   const loadBoM = useCallback(async () => {
     if (!id) return;
     try {
       const res = await authApi.get(`/bom/batches/${id}`);
       setBomData(res.data);
-    } catch { /* template may have no BoM */ }
+    } catch {
+      /* template may have no BoM */
+    }
   }, [id]);
 
-  useEffect(() => { loadBoM(); }, [loadBoM]);
+  useEffect(() => {
+    loadBoM();
+  }, [loadBoM]);
 
-  const canDo = (minRole: string) => (ROLE_LEVEL[user?.role || ''] || 0) >= (ROLE_LEVEL[minRole] || 0);
+  const canDo = (minRole: string) =>
+    (ROLE_LEVEL[user?.role || ''] || 0) >= (ROLE_LEVEL[minRole] || 0);
 
   const doTransition = async (trans: any, signature?: { meaning: string; password: string }) => {
     setActionLoading(true);
@@ -121,9 +252,13 @@ export default function BatchDetail() {
   const completeStep = async (stepNumber: number, actualValues: any) => {
     setActionLoading(true);
     try {
-      const res = await authApi.put(`/batches/${id}/steps/${stepNumber}/complete`, { actualValues });
+      const res = await authApi.put(`/batches/${id}/steps/${stepNumber}/complete`, {
+        actualValues,
+      });
       if (res.data.deviationsRaised > 0) {
-        message.warning(`Step completed — ${res.data.deviationsRaised} deviation(s) raised for out-of-range values`);
+        message.warning(
+          `Step completed — ${res.data.deviationsRaised} deviation(s) raised for out-of-range values`,
+        );
       } else {
         message.success('Step completed');
       }
@@ -184,16 +319,26 @@ export default function BatchDetail() {
   return (
     <div>
       <Space style={{ marginBottom: 16 }}>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/dashboard')}>Back</Button>
-        <Button icon={<AuditOutlined />} onClick={() => navigate(`/batches/${id}/audit`)}>Audit Trail</Button>
-        <Button icon={<BarcodeOutlined />} onClick={() => setBarcodeVisible(true)}>Barcode</Button>
-        <Button icon={<ExclamationCircleOutlined />} onClick={() => setIssueModal(true)}>Raise Issue</Button>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/dashboard')}>
+          Back
+        </Button>
+        <Button icon={<AuditOutlined />} onClick={() => navigate(`/batches/${id}/audit`)}>
+          Audit Trail
+        </Button>
+        <Button icon={<BarcodeOutlined />} onClick={() => setBarcodeVisible(true)}>
+          Barcode
+        </Button>
+        <Button icon={<ExclamationCircleOutlined />} onClick={() => setIssueModal(true)}>
+          Raise Issue
+        </Button>
       </Space>
 
       <Card
         title={
           <Space>
-            <Typography.Text strong style={{ fontSize: 18 }}>{batch.batchNumber}</Typography.Text>
+            <Typography.Text strong style={{ fontSize: 18 }}>
+              {batch.batchNumber}
+            </Typography.Text>
             <Tag color={STATE_COLOR[batch.state]}>{batch.state.replace(/_/g, ' ')}</Tag>
           </Space>
         }
@@ -219,8 +364,12 @@ export default function BatchDetail() {
           <Descriptions.Item label="Product Code">{batch.productCode}</Descriptions.Item>
           <Descriptions.Item label="Batch Size">{batch.batchSize} kg</Descriptions.Item>
           <Descriptions.Item label="Initiated By">{batch.initiator?.name}</Descriptions.Item>
-          <Descriptions.Item label="Initiated At">{batch.initiatedAt ? dayjs(batch.initiatedAt).format('YYYY-MM-DD HH:mm') : '—'}</Descriptions.Item>
-          <Descriptions.Item label="Created">{dayjs(batch.createdAt).format('YYYY-MM-DD HH:mm')}</Descriptions.Item>
+          <Descriptions.Item label="Initiated At">
+            {batch.initiatedAt ? dayjs(batch.initiatedAt).format('YYYY-MM-DD HH:mm') : '—'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Created">
+            {dayjs(batch.createdAt).format('YYYY-MM-DD HH:mm')}
+          </Descriptions.Item>
         </Descriptions>
       </Card>
 
@@ -249,7 +398,13 @@ export default function BatchDetail() {
                 renderItem={(sig: any) => (
                   <List.Item>
                     <List.Item.Meta
-                      title={<Space><strong>{sig.user_name}</strong><Tag>{sig.role}</Tag><Tag color="blue">{sig.meaning}</Tag></Space>}
+                      title={
+                        <Space>
+                          <strong>{sig.user_name}</strong>
+                          <Tag>{sig.role}</Tag>
+                          <Tag color="blue">{sig.meaning}</Tag>
+                        </Space>
+                      }
                       description={`${sig.step_or_transition} · ${dayjs(sig.timestamp).format('YYYY-MM-DD HH:mm:ss')}`}
                     />
                   </List.Item>
@@ -277,17 +432,23 @@ export default function BatchDetail() {
                   { title: 'Material', dataIndex: ['bomItem', 'material', 'materialName'] },
                   {
                     title: 'Required',
-                    render: (_: any, r: any) => `${r.requiredQty} ${r.bomItem.material?.unit || ''}`,
+                    render: (_: any, r: any) =>
+                      `${r.requiredQty} ${r.bomItem.material?.unit || ''}`,
                   },
                   {
                     title: 'Issued',
-                    render: (_: any, r: any) => `${r.totalIssued} ${r.bomItem.material?.unit || ''}`,
+                    render: (_: any, r: any) =>
+                      `${r.totalIssued} ${r.bomItem.material?.unit || ''}`,
                   },
                   {
                     title: 'Status',
                     dataIndex: 'status',
                     render: (s: string) => (
-                      <Tag color={s === 'ISSUED' ? 'success' : s === 'PARTIAL' ? 'warning' : 'default'}>{s}</Tag>
+                      <Tag
+                        color={s === 'ISSUED' ? 'success' : s === 'PARTIAL' ? 'warning' : 'default'}
+                      >
+                        {s}
+                      </Tag>
                     ),
                   },
                   {
@@ -295,7 +456,10 @@ export default function BatchDetail() {
                     render: (_: any, r: any) => (
                       <Button
                         size="small"
-                        onClick={() => { setIssuanceModal(r); issuanceForm.setFieldsValue({ issuedQty: r.requiredQty }); }}
+                        onClick={() => {
+                          setIssuanceModal(r);
+                          issuanceForm.setFieldsValue({ issuedQty: r.requiredQty });
+                        }}
                       >
                         Record Issuance
                       </Button>
@@ -314,14 +478,26 @@ export default function BatchDetail() {
                 renderItem={(dev: any) => (
                   <List.Item
                     extra={
-                      <Button size="small" onClick={() => navigate(`/deviations/${dev.id}`)}>View</Button>
+                      <Button size="small" onClick={() => navigate(`/deviations/${dev.id}`)}>
+                        View
+                      </Button>
                     }
                   >
                     <List.Item.Meta
                       title={
                         <Space>
-                          <Typography.Text>Step {dev.stepNumber}: {dev.fieldName}</Typography.Text>
-                          <Tag color={dev.status === 'OPEN' ? 'error' : dev.status === 'CLOSED' ? 'success' : 'warning'}>
+                          <Typography.Text>
+                            Step {dev.stepNumber}: {dev.fieldName}
+                          </Typography.Text>
+                          <Tag
+                            color={
+                              dev.status === 'OPEN'
+                                ? 'error'
+                                : dev.status === 'CLOSED'
+                                  ? 'success'
+                                  : 'warning'
+                            }
+                          >
                             {dev.status}
                           </Tag>
                         </Space>
@@ -340,7 +516,11 @@ export default function BatchDetail() {
       <ESignatureModal
         open={sigModal.open}
         title={sigModal.transition?.label || ''}
-        meanings={sigModal.transition ? [sigModal.transition.meaning] : ['Performed By', 'Verified By', 'Approved By', 'Released By']}
+        meanings={
+          sigModal.transition
+            ? [sigModal.transition.meaning]
+            : ['Performed By', 'Verified By', 'Approved By', 'Released By']
+        }
         loading={actionLoading}
         onConfirm={(sig) => doTransition(sigModal.transition, sig)}
         onCancel={() => setSigModal({ open: false })}
@@ -352,13 +532,21 @@ export default function BatchDetail() {
         open={barcodeVisible}
         onCancel={() => setBarcodeVisible(false)}
         footer={[
-          <Button key="print" onClick={() => window.print()}>Print</Button>,
-          <Button key="close" onClick={() => setBarcodeVisible(false)}>Close</Button>,
+          <Button key="print" onClick={() => window.print()}>
+            Print
+          </Button>,
+          <Button key="close" onClick={() => setBarcodeVisible(false)}>
+            Close
+          </Button>,
         ]}
         centered
       >
         <Space direction="vertical" align="center" style={{ width: '100%', padding: '16px 0' }}>
-          <BarcodeLabel value={batch.batchNumber} label={`${batch.productName} · ${batch.batchSize} kg`} height={70} />
+          <BarcodeLabel
+            value={batch.batchNumber}
+            label={`${batch.productName} · ${batch.batchSize} kg`}
+            height={70}
+          />
           <Typography.Text type="secondary">{batch.state.replace(/_/g, ' ')}</Typography.Text>
         </Space>
       </Modal>
@@ -368,7 +556,10 @@ export default function BatchDetail() {
         title="Raise Production Issue"
         open={issueModal}
         onOk={() => issueForm.validateFields().then(raiseIssue)}
-        onCancel={() => { setIssueModal(false); issueForm.resetFields(); }}
+        onCancel={() => {
+          setIssueModal(false);
+          issueForm.resetFields();
+        }}
         okText="Raise Issue"
       >
         <Form form={issueForm} layout="vertical" style={{ marginTop: 16 }}>
@@ -379,9 +570,21 @@ export default function BatchDetail() {
             <Input.TextArea rows={3} placeholder="Detailed description..." />
           </Form.Item>
           <Form.Item name="severity" label="Severity" rules={[{ required: true }]}>
-            <select style={{ width: '100%', height: 32, border: '1px solid #d9d9d9', borderRadius: 6, padding: '0 8px' }}>
+            <select
+              style={{
+                width: '100%',
+                height: 32,
+                border: '1px solid #d9d9d9',
+                borderRadius: 6,
+                padding: '0 8px',
+              }}
+            >
               <option value="">Select...</option>
-              {['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].map((s) => <option key={s} value={s}>{s}</option>)}
+              {['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
             </select>
           </Form.Item>
         </Form>
@@ -389,22 +592,35 @@ export default function BatchDetail() {
 
       {/* Record Issuance modal */}
       <Modal
-        title={issuanceModal ? `Record Issuance — ${issuanceModal.bomItem?.material?.materialName}` : ''}
+        title={
+          issuanceModal ? `Record Issuance — ${issuanceModal.bomItem?.material?.materialName}` : ''
+        }
         open={!!issuanceModal}
         onOk={() => issuanceForm.validateFields().then(recordIssuance)}
-        onCancel={() => { setIssuanceModal(null); issuanceForm.resetFields(); }}
+        onCancel={() => {
+          setIssuanceModal(null);
+          issuanceForm.resetFields();
+        }}
         okText="Record"
       >
         {issuanceModal && (
           <Form form={issuanceForm} layout="vertical" style={{ marginTop: 16 }}>
             <Descriptions size="small" column={2} style={{ marginBottom: 16 }}>
-              <Descriptions.Item label="Required">{issuanceModal.requiredQty} {issuanceModal.bomItem?.material?.unit}</Descriptions.Item>
-              <Descriptions.Item label="Already Issued">{issuanceModal.totalIssued} {issuanceModal.bomItem?.material?.unit}</Descriptions.Item>
+              <Descriptions.Item label="Required">
+                {issuanceModal.requiredQty} {issuanceModal.bomItem?.material?.unit}
+              </Descriptions.Item>
+              <Descriptions.Item label="Already Issued">
+                {issuanceModal.totalIssued} {issuanceModal.bomItem?.material?.unit}
+              </Descriptions.Item>
             </Descriptions>
             <Form.Item name="lotNumber" label="Lot Number" rules={[{ required: true }]}>
               <Input placeholder="e.g. LOT-2024-0321-A" />
             </Form.Item>
-            <Form.Item name="issuedQty" label={`Issued Quantity (${issuanceModal.bomItem?.material?.unit})`} rules={[{ required: true }]}>
+            <Form.Item
+              name="issuedQty"
+              label={`Issued Quantity (${issuanceModal.bomItem?.material?.unit})`}
+              rules={[{ required: true }]}
+            >
               <InputNumber min={0} step={0.001} style={{ width: '100%' }} />
             </Form.Item>
           </Form>

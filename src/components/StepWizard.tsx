@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import { Card, Steps, Form, InputNumber, Input, Button, Tag, Alert, Space, Typography, Descriptions } from 'antd';
+import {
+  Card,
+  Steps,
+  Form,
+  InputNumber,
+  Input,
+  Button,
+  Tag,
+  Alert,
+  Space,
+  Typography,
+  Descriptions,
+} from 'antd';
 import { CheckCircleOutlined, ClockCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
@@ -19,12 +31,23 @@ const STATUS_ICON: Record<string, React.ReactNode> = {
 };
 
 const ROLE_LEVEL: Record<string, number> = {
-  BATCH_OPERATOR: 1, SUPERVISOR: 2, QA_REVIEWER: 3, QA_MANAGER: 4, QUALIFIED_PERSON: 5,
+  BATCH_OPERATOR: 1,
+  SUPERVISOR: 2,
+  QA_REVIEWER: 3,
+  QA_MANAGER: 4,
+  QUALIFIED_PERSON: 5,
 };
 
 const STEP_EXECUTABLE_STATES = ['LINE_CLEARANCE', 'IN_PROGRESS'];
 
-export default function StepWizard({ steps, userRole, batchState, onComplete, onSkip, loading }: StepWizardProps) {
+export default function StepWizard({
+  steps,
+  userRole,
+  batchState,
+  onComplete,
+  onSkip,
+  loading,
+}: StepWizardProps) {
   const [form] = Form.useForm();
   const [stepError, setStepError] = useState<string | null>(null);
 
@@ -53,13 +76,21 @@ export default function StepWizard({ steps, userRole, batchState, onComplete, on
   const stepsItems = steps.map((s) => ({
     key: s.step_number,
     title: s.title,
-    status: (s.status === 'COMPLETED' ? 'finish' : s.status === 'SKIPPED' ? 'wait' : 'process') as 'finish' | 'wait' | 'process' | 'error',
+    status: (s.status === 'COMPLETED' ? 'finish' : s.status === 'SKIPPED' ? 'wait' : 'process') as
+      | 'finish'
+      | 'wait'
+      | 'process'
+      | 'error',
     icon: STATUS_ICON[s.status],
   }));
 
   return (
     <div>
-      <Steps current={activeIdx >= 0 ? activeIdx : steps.length} items={stepsItems} style={{ marginBottom: 24 }} />
+      <Steps
+        current={activeIdx >= 0 ? activeIdx : steps.length}
+        items={stepsItems}
+        style={{ marginBottom: 24 }}
+      />
 
       {!STEP_EXECUTABLE_STATES.includes(batchState) && (
         <Alert
@@ -72,9 +103,14 @@ export default function StepWizard({ steps, userRole, batchState, onComplete, on
       )}
 
       {activeStep ? (
-        <Card title={`Step ${activeStep.step_number}: ${activeStep.title}`} style={{ marginBottom: 16 }}>
+        <Card
+          title={`Step ${activeStep.step_number}: ${activeStep.title}`}
+          style={{ marginBottom: 16 }}
+        >
           <Typography.Paragraph type="secondary">{activeStep.instructions}</Typography.Paragraph>
-          {stepError && <Alert message={stepError} type="error" showIcon style={{ marginBottom: 16 }} />}
+          {stepError && (
+            <Alert message={stepError} type="error" showIcon style={{ marginBottom: 16 }} />
+          )}
           <Form form={form} layout="vertical">
             {(activeStep.required_fields || []).map((field: any) => (
               <Form.Item
@@ -83,7 +119,9 @@ export default function StepWizard({ steps, userRole, batchState, onComplete, on
                 label={`${field.label} ${field.unit ? `(${field.unit})` : ''}`}
                 rules={[{ required: true, message: `${field.label} is required` }]}
                 extra={
-                  field.min !== undefined || field.max !== undefined || field.exact_max !== undefined
+                  field.min !== undefined ||
+                  field.max !== undefined ||
+                  field.exact_max !== undefined
                     ? `Range: ${field.exact_max !== undefined ? `max ${field.exact_max}` : `${field.min ?? ''}–${field.max ?? ''}`}`
                     : undefined
                 }
@@ -93,11 +131,20 @@ export default function StepWizard({ steps, userRole, batchState, onComplete, on
             ))}
           </Form>
           <Space>
-            <Button type="primary" onClick={handleSubmit} loading={loading} disabled={!STEP_EXECUTABLE_STATES.includes(batchState)}>
+            <Button
+              type="primary"
+              onClick={handleSubmit}
+              loading={loading}
+              disabled={!STEP_EXECUTABLE_STATES.includes(batchState)}
+            >
               Complete Step
             </Button>
             {canSkip && (
-              <Button onClick={handleSkip} loading={loading} disabled={!STEP_EXECUTABLE_STATES.includes(batchState)}>
+              <Button
+                onClick={handleSkip}
+                loading={loading}
+                disabled={!STEP_EXECUTABLE_STATES.includes(batchState)}
+              >
                 Skip Step
               </Button>
             )}
@@ -109,29 +156,44 @@ export default function StepWizard({ steps, userRole, batchState, onComplete, on
         </Card>
       )}
 
-      <Typography.Title level={5} style={{ marginTop: 24 }}>Step History</Typography.Title>
-      {steps.filter((s) => s.status !== 'PENDING').map((s) => (
-        <Card key={s.step_number} size="small" style={{ marginBottom: 8 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <Typography.Text strong>{s.step_number}. {s.title}</Typography.Text>
-              <Tag color={s.status === 'COMPLETED' ? 'success' : 'default'} style={{ marginLeft: 8 }}>{s.status}</Tag>
+      <Typography.Title level={5} style={{ marginTop: 24 }}>
+        Step History
+      </Typography.Title>
+      {steps
+        .filter((s) => s.status !== 'PENDING')
+        .map((s) => (
+          <Card key={s.step_number} size="small" style={{ marginBottom: 8 }}>
+            <div
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+            >
+              <div>
+                <Typography.Text strong>
+                  {s.step_number}. {s.title}
+                </Typography.Text>
+                <Tag
+                  color={s.status === 'COMPLETED' ? 'success' : 'default'}
+                  style={{ marginLeft: 8 }}
+                >
+                  {s.status}
+                </Tag>
+              </div>
+              {s.completed_at && (
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                  {s.completed_by_name} · {dayjs(s.completed_at).format('MM-DD HH:mm')}
+                </Typography.Text>
+              )}
             </div>
-            {s.completed_at && (
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                {s.completed_by_name} · {dayjs(s.completed_at).format('MM-DD HH:mm')}
-              </Typography.Text>
+            {s.actual_values && Object.keys(s.actual_values).length > 0 && (
+              <Descriptions size="small" column={3} style={{ marginTop: 8 }}>
+                {Object.entries(s.actual_values).map(([k, v]) => (
+                  <Descriptions.Item key={k} label={k}>
+                    {String(v)}
+                  </Descriptions.Item>
+                ))}
+              </Descriptions>
             )}
-          </div>
-          {s.actual_values && Object.keys(s.actual_values).length > 0 && (
-            <Descriptions size="small" column={3} style={{ marginTop: 8 }}>
-              {Object.entries(s.actual_values).map(([k, v]) => (
-                <Descriptions.Item key={k} label={k}>{String(v)}</Descriptions.Item>
-              ))}
-            </Descriptions>
-          )}
-        </Card>
-      ))}
+          </Card>
+        ))}
     </div>
   );
 }

@@ -1,7 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Space, Modal, Form, Input, InputNumber, Select, DatePicker,
-  Typography, Row, Col, message, Statistic,
+  Card,
+  Table,
+  Tag,
+  Button,
+  Space,
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  DatePicker,
+  Typography,
+  Row,
+  Col,
+  message,
+  Statistic,
 } from 'antd';
 import { Grid } from 'antd';
 import { PlusOutlined, DollarOutlined } from '@ant-design/icons';
@@ -71,16 +85,28 @@ export default function PoTracker() {
   };
 
   const tableColumns = [
-    { title: 'PO Number', dataIndex: 'po_number', key: 'po_number', render: (v: string) => <Typography.Text code>{v}</Typography.Text> },
+    {
+      title: 'PO Number',
+      dataIndex: 'po_number',
+      key: 'po_number',
+      render: (v: string) => <Typography.Text code>{v}</Typography.Text>,
+    },
     { title: 'Supplier', dataIndex: 'supplier', key: 'supplier', ellipsis: true },
     { title: 'Material', dataIndex: 'material_name', key: 'material_name', ellipsis: true },
     { title: 'Qty', key: 'qty', render: (_: any, r: any) => `${r.quantity} ${r.unit || ''}` },
-    { title: 'Value', dataIndex: 'total_value', key: 'total_value', render: (v: number) => v ? `${v.toLocaleString()}` : '—' },
+    {
+      title: 'Value',
+      dataIndex: 'total_value',
+      key: 'total_value',
+      render: (v: number) => (v ? `${v.toLocaleString()}` : '—'),
+    },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (v: string) => <Tag color={PO_STATUS_COLOR[v] || 'default'}>{v?.replace(/_/g, ' ')}</Tag>,
+      render: (v: string) => (
+        <Tag color={PO_STATUS_COLOR[v] || 'default'}>{v?.replace(/_/g, ' ')}</Tag>
+      ),
     },
     {
       title: 'Expected Delivery',
@@ -117,11 +143,7 @@ export default function PoTracker() {
 
           <Space direction="vertical" style={{ width: '100%' }}>
             {colPos.map((po) => (
-              <Card
-                key={po.id}
-                size="small"
-                style={{ borderRadius: 6 }}
-              >
+              <Card key={po.id} size="small" style={{ borderRadius: 6 }}>
                 <Typography.Text strong style={{ display: 'block' }}>
                   {po.po_number}
                 </Typography.Text>
@@ -129,12 +151,12 @@ export default function PoTracker() {
                   {po.supplier}
                 </Typography.Text>
                 <br />
-                <Typography.Text style={{ fontSize: 12 }}>
-                  {po.material_name}
-                </Typography.Text>
+                <Typography.Text style={{ fontSize: 12 }}>{po.material_name}</Typography.Text>
                 <br />
                 <Space size={4} style={{ marginTop: 4 }}>
-                  <Tag style={{ fontSize: 11 }}>{po.quantity} {po.unit}</Tag>
+                  <Tag style={{ fontSize: 11 }}>
+                    {po.quantity} {po.unit}
+                  </Tag>
                   {po.total_value && (
                     <Tag icon={<DollarOutlined />} style={{ fontSize: 11 }}>
                       {po.total_value.toLocaleString()}
@@ -142,7 +164,10 @@ export default function PoTracker() {
                   )}
                 </Space>
                 {po.expected_delivery_date && (
-                  <Typography.Text type="secondary" style={{ fontSize: 11, display: 'block', marginTop: 4 }}>
+                  <Typography.Text
+                    type="secondary"
+                    style={{ fontSize: 11, display: 'block', marginTop: 4 }}
+                  >
                     Delivery: {dayjs(po.expected_delivery_date).format('YYYY-MM-DD')}
                   </Typography.Text>
                 )}
@@ -150,7 +175,10 @@ export default function PoTracker() {
             ))}
 
             {colPos.length === 0 && (
-              <Typography.Text type="secondary" style={{ display: 'block', textAlign: 'center', padding: '24px 0' }}>
+              <Typography.Text
+                type="secondary"
+                style={{ display: 'block', textAlign: 'center', padding: '24px 0' }}
+              >
                 No POs
               </Typography.Text>
             )}
@@ -205,7 +233,10 @@ export default function PoTracker() {
         title="Create Purchase Order"
         open={modalOpen}
         onOk={handleCreate}
-        onCancel={() => { setModalOpen(false); form.resetFields(); }}
+        onCancel={() => {
+          setModalOpen(false);
+          form.resetFields();
+        }}
         confirmLoading={saving}
         okText="Create PO"
         width={560}
@@ -217,7 +248,7 @@ export default function PoTracker() {
               allowClear
               showSearch
               filterOption={(input, opt) =>
-                (opt?.label as string || '').toLowerCase().includes(input.toLowerCase())
+                ((opt?.label as string) || '').toLowerCase().includes(input.toLowerCase())
               }
               options={intents.map((i) => ({
                 value: i.id,

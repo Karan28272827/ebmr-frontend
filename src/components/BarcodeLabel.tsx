@@ -10,10 +10,20 @@ interface BarcodeLabelProps {
   fontSize?: number;
 }
 
-export default function BarcodeLabel({ value, label, width = 1.5, height = 50, fontSize = 12 }: BarcodeLabelProps) {
+export default function BarcodeLabel({
+  value,
+  label,
+  width = 1.5,
+  height = 50,
+  fontSize = 12,
+}: BarcodeLabelProps) {
   return (
     <Space direction="vertical" align="center" size={2}>
-      {label && <Typography.Text type="secondary" style={{ fontSize: 11 }}>{label}</Typography.Text>}
+      {label && (
+        <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+          {label}
+        </Typography.Text>
+      )}
       <Barcode
         value={value}
         width={width}

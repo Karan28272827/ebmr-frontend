@@ -1,11 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Card, Tag, Button, Modal, Form, Input, Space, Typography, message, Popconfirm } from 'antd';
+import {
+  Table,
+  Card,
+  Tag,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Space,
+  Typography,
+  message,
+  Popconfirm,
+} from 'antd';
 import { PlusOutlined, FileDoneOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { authApi } from '../../api/axios';
 import { useAppSelector } from '../../store/hooks';
 import dayjs from 'dayjs';
 
-const STATUS_COLOR: Record<string, string> = { DRAFT: 'default', RELEASED: 'green', REVOKED: 'red' };
+const STATUS_COLOR: Record<string, string> = {
+  DRAFT: 'default',
+  RELEASED: 'green',
+  REVOKED: 'red',
+};
 
 export default function CoaList() {
   const { user } = useAppSelector((s: any) => s.auth);
@@ -23,11 +39,15 @@ export default function CoaList() {
       if (productFilter) params.set('productCode', productFilter);
       const res = await authApi.get(`/coa?${params}`);
       setData(res.data);
-    } catch { message.error('Failed to load Certificates of Analysis'); }
+    } catch {
+      message.error('Failed to load Certificates of Analysis');
+    }
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [productFilter]);
+  useEffect(() => {
+    fetchData();
+  }, [productFilter]);
 
   const handleGenerate = async (vals: any) => {
     setSubmitting(true);
@@ -37,7 +57,9 @@ export default function CoaList() {
       setModalOpen(false);
       form.resetFields();
       fetchData();
-    } catch { message.error('Failed to generate CoA'); }
+    } catch {
+      message.error('Failed to generate CoA');
+    }
     setSubmitting(false);
   };
 
@@ -46,7 +68,9 @@ export default function CoaList() {
       await authApi.post(`/coa/${id}/release`);
       message.success('CoA released');
       fetchData();
-    } catch (e: any) { message.error(e?.response?.data?.message || 'Failed to release CoA'); }
+    } catch (e: any) {
+      message.error(e?.response?.data?.message || 'Failed to release CoA');
+    }
   };
 
   const canRelease = user?.role && ['QUALIFIED_PERSON', 'SYSTEM_ADMIN'].includes(user.role);
@@ -54,25 +78,52 @@ export default function CoaList() {
   const columns = [
     { title: 'CoA Number', dataIndex: 'coa_number', key: 'coa_number' },
     { title: 'Product Code', dataIndex: 'product_code', key: 'product_code' },
-    { title: 'Batch', key: 'batch', render: (_: any, r: any) => r.batch?.batch_number || r.batch_id },
-    { title: 'Status', dataIndex: 'status', key: 'status', render: (v: string) => <Tag color={STATUS_COLOR[v] || 'default'}>{v}</Tag> },
-    { title: 'Generated', dataIndex: 'generated_at', key: 'generated_at', render: (v: string) => v ? dayjs(v).format('DD MMM YYYY') : '—' },
-    { title: 'Released', dataIndex: 'released_at', key: 'released_at', render: (v: string) => v ? dayjs(v).format('DD MMM YYYY') : '—' },
     {
-      title: 'Action', key: 'action', render: (_: any, r: any) => (
-        canRelease && r.status === 'DRAFT'
-          ? (
-            <Popconfirm title="Release this CoA?" onConfirm={() => handleRelease(r.id)} okText="Release">
-              <Button size="small" type="primary" icon={<CheckCircleOutlined />}>Release</Button>
-            </Popconfirm>
-          ) : null
-      ),
+      title: 'Batch',
+      key: 'batch',
+      render: (_: any, r: any) => r.batch?.batch_number || r.batch_id,
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (v: string) => <Tag color={STATUS_COLOR[v] || 'default'}>{v}</Tag>,
+    },
+    {
+      title: 'Generated',
+      dataIndex: 'generated_at',
+      key: 'generated_at',
+      render: (v: string) => (v ? dayjs(v).format('DD MMM YYYY') : '—'),
+    },
+    {
+      title: 'Released',
+      dataIndex: 'released_at',
+      key: 'released_at',
+      render: (v: string) => (v ? dayjs(v).format('DD MMM YYYY') : '—'),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_: any, r: any) =>
+        canRelease && r.status === 'DRAFT' ? (
+          <Popconfirm
+            title="Release this CoA?"
+            onConfirm={() => handleRelease(r.id)}
+            okText="Release"
+          >
+            <Button size="small" type="primary" icon={<CheckCircleOutlined />}>
+              Release
+            </Button>
+          </Popconfirm>
+        ) : null,
     },
   ];
 
   return (
     <div>
-      <Typography.Title level={4}><FileDoneOutlined /> Certificates of Analysis</Typography.Title>
+      <Typography.Title level={4}>
+        <FileDoneOutlined /> Certificates of Analysis
+      </Typography.Title>
       <Card>
         <Space style={{ marginBottom: 12 }}>
           <Input.Search
@@ -81,12 +132,20 @@ export default function CoaList() {
             style={{ width: 220 }}
             onSearch={setProductFilter}
           />
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>Generate CoA</Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
+            Generate CoA
+          </Button>
         </Space>
         <Table dataSource={data} columns={columns} rowKey="id" loading={loading} size="small" />
       </Card>
 
-      <Modal title="Generate Certificate of Analysis" open={modalOpen} onCancel={() => setModalOpen(false)} onOk={() => form.submit()} confirmLoading={submitting}>
+      <Modal
+        title="Generate Certificate of Analysis"
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        onOk={() => form.submit()}
+        confirmLoading={submitting}
+      >
         <Form form={form} layout="vertical" onFinish={handleGenerate}>
           <Form.Item name="batch_id" label="Batch ID" rules={[{ required: true }]}>
             <Input placeholder="Batch UUID" />

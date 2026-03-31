@@ -1,14 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Tag, Button, Form, Input, Alert, Space, Typography, Spin, Select, message } from 'antd';
+import {
+  Card,
+  Descriptions,
+  Tag,
+  Button,
+  Form,
+  Input,
+  Alert,
+  Space,
+  Typography,
+  Spin,
+  Select,
+  message,
+} from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { authApi } from '../api/axios';
 import { useAppSelector } from '../store/hooks';
 
-const STATUS_COLOR: Record<string, string> = { OPEN: 'error', UNDER_REVIEW: 'warning', CLOSED: 'success' };
+const STATUS_COLOR: Record<string, string> = {
+  OPEN: 'error',
+  UNDER_REVIEW: 'warning',
+  CLOSED: 'success',
+};
 const ROLE_LEVEL: Record<string, number> = {
-  BATCH_OPERATOR: 1, SUPERVISOR: 2, QA_REVIEWER: 3, QA_MANAGER: 4, QUALIFIED_PERSON: 5,
+  BATCH_OPERATOR: 1,
+  SUPERVISOR: 2,
+  QA_REVIEWER: 3,
+  QA_MANAGER: 4,
+  QUALIFIED_PERSON: 5,
 };
 
 export default function DeviationDetail() {
@@ -28,7 +49,9 @@ export default function DeviationDetail() {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => {
+    load();
+  }, [id]);
 
   const handleClose = async () => {
     const { resolutionNotes } = await form.validateFields();
@@ -64,7 +87,9 @@ export default function DeviationDetail() {
   return (
     <div style={{ maxWidth: 720 }}>
       <Space style={{ marginBottom: 16 }}>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/deviations')}>Back</Button>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/deviations')}>
+          Back
+        </Button>
         <Button onClick={() => navigate(`/batches/${deviation.batchId}`)}>View Batch</Button>
       </Space>
 
@@ -76,8 +101,14 @@ export default function DeviationDetail() {
           </Space>
         }
         extra={
-          canQA && deviation.status !== 'CLOSED' && (
-            <Select value={deviation.status} onChange={handleStatusChange} style={{ width: 160 }} loading={actionLoading}>
+          canQA &&
+          deviation.status !== 'CLOSED' && (
+            <Select
+              value={deviation.status}
+              onChange={handleStatusChange}
+              style={{ width: 160 }}
+              loading={actionLoading}
+            >
               <Select.Option value="OPEN">OPEN</Select.Option>
               <Select.Option value="UNDER_REVIEW">UNDER REVIEW</Select.Option>
             </Select>
@@ -92,11 +123,17 @@ export default function DeviationDetail() {
           <Descriptions.Item label="Field">{deviation.fieldName}</Descriptions.Item>
           <Descriptions.Item label="Actual Value">{deviation.actualValue}</Descriptions.Item>
           <Descriptions.Item label="Expected Range">{deviation.expectedRange}</Descriptions.Item>
-          <Descriptions.Item label="Raised By">{deviation.raiser?.name} ({deviation.raiser?.role})</Descriptions.Item>
-          <Descriptions.Item label="Raised At">{dayjs(deviation.raisedAt).format('YYYY-MM-DD HH:mm')}</Descriptions.Item>
+          <Descriptions.Item label="Raised By">
+            {deviation.raiser?.name} ({deviation.raiser?.role})
+          </Descriptions.Item>
+          <Descriptions.Item label="Raised At">
+            {dayjs(deviation.raisedAt).format('YYYY-MM-DD HH:mm')}
+          </Descriptions.Item>
           {deviation.closedBy && (
             <>
-              <Descriptions.Item label="Closed At">{dayjs(deviation.closedAt).format('YYYY-MM-DD HH:mm')}</Descriptions.Item>
+              <Descriptions.Item label="Closed At">
+                {dayjs(deviation.closedAt).format('YYYY-MM-DD HH:mm')}
+              </Descriptions.Item>
               <Descriptions.Item label="Resolution">{deviation.resolutionNotes}</Descriptions.Item>
             </>
           )}
@@ -106,8 +143,15 @@ export default function DeviationDetail() {
       {canQA && deviation.status !== 'CLOSED' && (
         <Card title="Close Deviation">
           <Form form={form} layout="vertical" onFinish={handleClose}>
-            <Form.Item name="resolutionNotes" label="Resolution Notes" rules={[{ required: true, message: 'Resolution notes are required' }]}>
-              <Input.TextArea rows={4} placeholder="Describe the investigation findings and corrective actions taken..." />
+            <Form.Item
+              name="resolutionNotes"
+              label="Resolution Notes"
+              rules={[{ required: true, message: 'Resolution notes are required' }]}
+            >
+              <Input.TextArea
+                rows={4}
+                placeholder="Describe the investigation findings and corrective actions taken..."
+              />
             </Form.Item>
             <Button type="primary" danger htmlType="submit" loading={actionLoading}>
               Close Deviation

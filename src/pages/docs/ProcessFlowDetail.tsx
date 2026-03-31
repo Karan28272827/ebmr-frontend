@@ -1,7 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Row, Col, Tag, Button, Space, Timeline, Typography, Spin, Descriptions,
-  Modal, Form, Input, Select, Table, message, Grid, Alert,
+  Card,
+  Row,
+  Col,
+  Tag,
+  Button,
+  Space,
+  Timeline,
+  Typography,
+  Spin,
+  Descriptions,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Table,
+  message,
+  Grid,
+  Alert,
 } from 'antd';
 import { ArrowLeftOutlined, PaperClipOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -105,7 +121,10 @@ export default function ProcessFlowDetail() {
   if (!flow) return null;
 
   const metrics = flow.baseline_metrics || {};
-  const hasMetrics = metrics.expected_yield_pct != null || metrics.avg_cycle_time_hrs != null || metrics.target_defect_rate != null;
+  const hasMetrics =
+    metrics.expected_yield_pct != null ||
+    metrics.avg_cycle_time_hrs != null ||
+    metrics.target_defect_rate != null;
   const stages: any[] = flow.stages || [];
   const documents: any[] = flow.documents || [];
 
@@ -114,7 +133,9 @@ export default function ProcessFlowDetail() {
       title: 'Type',
       dataIndex: 'doc_type',
       key: 'doc_type',
-      render: (t: string) => <Tag color={DOC_TYPE_COLOR[t] || 'default'}>{t?.replace(/_/g, ' ')}</Tag>,
+      render: (t: string) => (
+        <Tag color={DOC_TYPE_COLOR[t] || 'default'}>{t?.replace(/_/g, ' ')}</Tag>
+      ),
     },
     { title: 'Title', dataIndex: 'title', key: 'title' },
     { title: 'Version', dataIndex: 'version', key: 'version' },
@@ -122,7 +143,7 @@ export default function ProcessFlowDetail() {
       title: 'Uploaded At',
       dataIndex: 'uploaded_at',
       key: 'uploaded_at',
-      render: (d: string) => d ? dayjs(d).format('DD MMM YYYY') : '-',
+      render: (d: string) => (d ? dayjs(d).format('DD MMM YYYY') : '-'),
     },
     {
       title: 'Reference',
@@ -144,7 +165,9 @@ export default function ProcessFlowDetail() {
             <div>
               <Space>
                 <Tag color="default">{flow.flow_code}</Tag>
-                <Title level={3} style={{ margin: 0 }}>{flow.title}</Title>
+                <Title level={3} style={{ margin: 0 }}>
+                  {flow.title}
+                </Title>
                 <Tag color={STATUS_COLOR[flow.status] || 'default'}>{flow.status}</Tag>
               </Space>
               <br />
@@ -174,7 +197,9 @@ export default function ProcessFlowDetail() {
                 <Card size="small" style={{ textAlign: 'center', background: '#f6ffed' }}>
                   <Text type="secondary">Expected Yield</Text>
                   <br />
-                  <Text strong style={{ fontSize: 24 }}>{metrics.expected_yield_pct}%</Text>
+                  <Text strong style={{ fontSize: 24 }}>
+                    {metrics.expected_yield_pct}%
+                  </Text>
                 </Card>
               </Col>
             )}
@@ -183,7 +208,9 @@ export default function ProcessFlowDetail() {
                 <Card size="small" style={{ textAlign: 'center', background: '#e6f7ff' }}>
                   <Text type="secondary">Avg Cycle Time</Text>
                   <br />
-                  <Text strong style={{ fontSize: 24 }}>{metrics.avg_cycle_time_hrs} hrs</Text>
+                  <Text strong style={{ fontSize: 24 }}>
+                    {metrics.avg_cycle_time_hrs} hrs
+                  </Text>
                 </Card>
               </Col>
             )}
@@ -192,7 +219,9 @@ export default function ProcessFlowDetail() {
                 <Card size="small" style={{ textAlign: 'center', background: '#fff7e6' }}>
                   <Text type="secondary">Target Defect Rate</Text>
                   <br />
-                  <Text strong style={{ fontSize: 24 }}>{metrics.target_defect_rate}%</Text>
+                  <Text strong style={{ fontSize: 24 }}>
+                    {metrics.target_defect_rate}%
+                  </Text>
                 </Card>
               </Col>
             )}
@@ -223,9 +252,7 @@ export default function ProcessFlowDetail() {
                       <Text strong>{stage.stage_name}</Text>
                       {stage.department && <Tag color="blue">{stage.department}</Tag>}
                       {stage.critical && <Tag color="error">CRITICAL</Tag>}
-                      {stage.duration_min && (
-                        <Tag color="default">{stage.duration_min} min</Tag>
-                      )}
+                      {stage.duration_min && <Tag color="default">{stage.duration_min} min</Tag>}
                     </Space>
                   }
                 >
@@ -244,8 +271,18 @@ export default function ProcessFlowDetail() {
                       message={
                         <Text>
                           <strong>Decision:</strong> {stage.decision_condition}
-                          {stage.decision_yes && <> → Yes: <Tag color="success">{stage.decision_yes}</Tag></>}
-                          {stage.decision_no && <> | No: <Tag color="error">{stage.decision_no}</Tag></>}
+                          {stage.decision_yes && (
+                            <>
+                              {' '}
+                              → Yes: <Tag color="success">{stage.decision_yes}</Tag>
+                            </>
+                          )}
+                          {stage.decision_no && (
+                            <>
+                              {' '}
+                              | No: <Tag color="error">{stage.decision_no}</Tag>
+                            </>
+                          )}
                         </Text>
                       }
                     />
@@ -256,13 +293,18 @@ export default function ProcessFlowDetail() {
                     <Row gutter={8} style={{ marginTop: 8 }}>
                       {stage.inputs?.length > 0 && (
                         <Col xs={24} sm={8}>
-                          <Text type="secondary" strong>Inputs</Text>
+                          <Text type="secondary" strong>
+                            Inputs
+                          </Text>
                           <ul style={{ margin: '4px 0', paddingLeft: 16 }}>
-                            {(Array.isArray(stage.inputs) ? stage.inputs : stage.inputs.split(',')).map(
-                              (inp: string, i: number) => (
-                                <li key={i}><Text style={{ fontSize: 12 }}>{inp.trim()}</Text></li>
-                              )
-                            )}
+                            {(Array.isArray(stage.inputs)
+                              ? stage.inputs
+                              : stage.inputs.split(',')
+                            ).map((inp: string, i: number) => (
+                              <li key={i}>
+                                <Text style={{ fontSize: 12 }}>{inp.trim()}</Text>
+                              </li>
+                            ))}
                           </ul>
                         </Col>
                       )}
@@ -273,13 +315,18 @@ export default function ProcessFlowDetail() {
                       )}
                       {stage.outputs?.length > 0 && (
                         <Col xs={24} sm={8}>
-                          <Text type="secondary" strong>Outputs</Text>
+                          <Text type="secondary" strong>
+                            Outputs
+                          </Text>
                           <ul style={{ margin: '4px 0', paddingLeft: 16 }}>
-                            {(Array.isArray(stage.outputs) ? stage.outputs : stage.outputs.split(',')).map(
-                              (out: string, i: number) => (
-                                <li key={i}><Text style={{ fontSize: 12 }}>{out.trim()}</Text></li>
-                              )
-                            )}
+                            {(Array.isArray(stage.outputs)
+                              ? stage.outputs
+                              : stage.outputs.split(',')
+                            ).map((out: string, i: number) => (
+                              <li key={i}>
+                                <Text style={{ fontSize: 12 }}>{out.trim()}</Text>
+                              </li>
+                            ))}
                           </ul>
                         </Col>
                       )}
@@ -300,7 +347,10 @@ export default function ProcessFlowDetail() {
             <Button
               icon={<PlusOutlined />}
               size="small"
-              onClick={() => { docForm.resetFields(); setDocModalOpen(true); }}
+              onClick={() => {
+                docForm.resetFields();
+                setDocModalOpen(true);
+              }}
             >
               Attach Document
             </Button>
@@ -340,11 +390,7 @@ export default function ProcessFlowDetail() {
               <Option value="SPECIFICATION">Specification</Option>
             </Select>
           </Form.Item>
-          <Form.Item
-            label="Title"
-            name="title"
-            rules={[{ required: true, message: 'Required' }]}
-          >
+          <Form.Item label="Title" name="title" rules={[{ required: true, message: 'Required' }]}>
             <Input placeholder="Document title" />
           </Form.Item>
           <Row gutter={12}>
@@ -366,7 +412,12 @@ export default function ProcessFlowDetail() {
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Space>
               <Button onClick={() => setDocModalOpen(false)}>Cancel</Button>
-              <Button type="primary" htmlType="submit" loading={submittingDoc} icon={<PaperClipOutlined />}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={submittingDoc}
+                icon={<PaperClipOutlined />}
+              >
                 Attach
               </Button>
             </Space>

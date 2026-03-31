@@ -116,7 +116,10 @@ export default function QcTestsList() {
         loading={loading}
         pagination={{ pageSize: 20 }}
         size="middle"
-        onRow={(r) => ({ onClick: () => navigate(`/qc/tests/${r.id}`), style: { cursor: 'pointer' } })}
+        onRow={(r) => ({
+          onClick: () => navigate(`/qc/tests/${r.id}`),
+          style: { cursor: 'pointer' },
+        })}
       />
     );
   };

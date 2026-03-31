@@ -10,7 +10,14 @@ interface Props {
   loading?: boolean;
 }
 
-export default function ESignatureModal({ open, title, meanings, onConfirm, onCancel, loading }: Props) {
+export default function ESignatureModal({
+  open,
+  title,
+  meanings,
+  onConfirm,
+  onCancel,
+  loading,
+}: Props) {
   const [form] = Form.useForm();
   const [error, setError] = useState<string | null>(null);
 
@@ -33,19 +40,28 @@ export default function ESignatureModal({ open, title, meanings, onConfirm, onCa
         </Typography.Text>
       }
       onOk={handleOk}
-      onCancel={() => { form.resetFields(); setError(null); onCancel(); }}
+      onCancel={() => {
+        form.resetFields();
+        setError(null);
+        onCancel();
+      }}
       okText="Sign & Confirm"
       confirmLoading={loading}
       destroyOnClose
     >
       <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
-        Your electronic signature is required for this critical action. Please re-enter your password to confirm.
+        Your electronic signature is required for this critical action. Please re-enter your
+        password to confirm.
       </Typography.Text>
       {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 12 }} />}
       <Form form={form} layout="vertical">
         <Form.Item name="meaning" label="Signature Meaning" rules={[{ required: true }]}>
           <Select placeholder="Select meaning">
-            {meanings.map((m) => <Select.Option key={m} value={m}>{m}</Select.Option>)}
+            {meanings.map((m) => (
+              <Select.Option key={m} value={m}>
+                {m}
+              </Select.Option>
+            ))}
           </Select>
         </Form.Item>
         <Form.Item name="password" label="Password" rules={[{ required: true }]}>

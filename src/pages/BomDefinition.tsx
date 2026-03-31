@@ -1,13 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Select, Table, Button, Modal, Form, Input, InputNumber, Space, Tag, Typography, message, Popconfirm, Spin,
+  Card,
+  Select,
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  Space,
+  Tag,
+  Typography,
+  message,
+  Popconfirm,
+  Spin,
 } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { authApi } from '../api/axios';
 import { useAppSelector } from '../store/hooks';
 
 const ROLE_LEVEL: Record<string, number> = {
-  BATCH_OPERATOR: 1, SUPERVISOR: 2, QA_REVIEWER: 3, QA_MANAGER: 4, QUALIFIED_PERSON: 5,
+  BATCH_OPERATOR: 1,
+  SUPERVISOR: 2,
+  QA_REVIEWER: 3,
+  QA_MANAGER: 4,
+  QUALIFIED_PERSON: 5,
 };
 
 export default function BomDefinition() {
@@ -86,14 +103,23 @@ export default function BomDefinition() {
       render: (v: number, row: any) => `${v} ${row.material?.unit || ''}`,
     },
     { title: 'Notes', dataIndex: 'notes', ellipsis: true },
-    ...(canEdit ? [{
-      title: '',
-      render: (_: any, row: any) => (
-        <Popconfirm title="Remove this BoM item?" onConfirm={() => handleRemove(row.id)} okText="Remove" okType="danger">
-          <Button size="small" danger icon={<DeleteOutlined />} />
-        </Popconfirm>
-      ),
-    }] : []),
+    ...(canEdit
+      ? [
+          {
+            title: '',
+            render: (_: any, row: any) => (
+              <Popconfirm
+                title="Remove this BoM item?"
+                onConfirm={() => handleRemove(row.id)}
+                okText="Remove"
+                okType="danger"
+              >
+                <Button size="small" danger icon={<DeleteOutlined />} />
+              </Popconfirm>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -104,7 +130,10 @@ export default function BomDefinition() {
             placeholder="Select a product template"
             style={{ width: 360 }}
             onChange={handleTemplateChange}
-            options={templates.map((t) => ({ value: t.id, label: `${t.productCode} — ${t.productName}` }))}
+            options={templates.map((t) => ({
+              value: t.id,
+              label: `${t.productCode} — ${t.productName}`,
+            }))}
           />
 
           {selectedTemplate && (
@@ -112,7 +141,12 @@ export default function BomDefinition() {
               title={`BoM: ${templates.find((t) => t.id === selectedTemplate)?.productName}`}
               extra={
                 canEdit && (
-                  <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)} disabled={availableMaterials.length === 0}>
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setModalOpen(true)}
+                    disabled={availableMaterials.length === 0}
+                  >
                     Add Item
                   </Button>
                 )
@@ -140,7 +174,10 @@ export default function BomDefinition() {
         title="Add BoM Item"
         open={modalOpen}
         onOk={handleAdd}
-        onCancel={() => { setModalOpen(false); form.resetFields(); }}
+        onCancel={() => {
+          setModalOpen(false);
+          form.resetFields();
+        }}
         confirmLoading={saving}
         okText="Add"
       >
@@ -149,7 +186,9 @@ export default function BomDefinition() {
             <Select
               placeholder="Select material"
               showSearch
-              filterOption={(input, opt) => (opt?.label as string || '').toLowerCase().includes(input.toLowerCase())}
+              filterOption={(input, opt) =>
+                ((opt?.label as string) || '').toLowerCase().includes(input.toLowerCase())
+              }
               options={availableMaterials.map((m) => ({
                 value: m.id,
                 label: `${m.materialCode} — ${m.materialName} (${m.unit})`,

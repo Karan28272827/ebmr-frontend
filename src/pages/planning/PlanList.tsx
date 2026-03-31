@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Select, Space, Typography, Spin, Row, Col, Grid, message,
+  Card,
+  Table,
+  Tag,
+  Button,
+  Select,
+  Space,
+  Typography,
+  Spin,
+  Row,
+  Col,
+  Grid,
+  message,
 } from 'antd';
 import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -31,7 +42,10 @@ export default function PlanList() {
     authApi
       .get(`/plans${params}`)
       .then((r) => setPlans(Array.isArray(r.data) ? r.data : r.data.plans || []))
-      .catch(() => { message.error('Failed to load plans'); setPlans([]); })
+      .catch(() => {
+        message.error('Failed to load plans');
+        setPlans([]);
+      })
       .finally(() => setLoading(false));
   }, [statusFilter]);
 
@@ -53,7 +67,9 @@ export default function PlanList() {
       dataIndex: 'status',
       key: 'status',
       width: 150,
-      render: (v: string) => <Tag color={STATUS_COLOR[v] || 'default'}>{(v || '').replace(/_/g, ' ')}</Tag>,
+      render: (v: string) => (
+        <Tag color={STATUS_COLOR[v] || 'default'}>{(v || '').replace(/_/g, ' ')}</Tag>
+      ),
     },
     {
       title: 'Batches',
@@ -83,7 +99,14 @@ export default function PlanList() {
   return (
     <div>
       <div
-        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 16,
+          flexWrap: 'wrap',
+          gap: 8,
+        }}
       >
         <Typography.Title level={4} style={{ margin: 0 }}>
           Production Plans
@@ -99,7 +122,14 @@ export default function PlanList() {
           allowClear
           style={{ width: 180 }}
           onChange={(v) => setStatusFilter(v ?? '')}
-          options={['DRAFT', 'PENDING_APPROVAL', 'APPROVED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'].map((v) => ({
+          options={[
+            'DRAFT',
+            'PENDING_APPROVAL',
+            'APPROVED',
+            'IN_PROGRESS',
+            'COMPLETED',
+            'CANCELLED',
+          ].map((v) => ({
             value: v,
             label: v.replace(/_/g, ' '),
           }))}
@@ -125,14 +155,20 @@ export default function PlanList() {
             <Col xs={24} key={p.id}>
               <Card
                 size="small"
-                extra={<Button size="small" onClick={() => navigate(`/planning/${p.id}`)}>View</Button>}
+                extra={
+                  <Button size="small" onClick={() => navigate(`/planning/${p.id}`)}>
+                    View
+                  </Button>
+                }
                 onClick={() => navigate(`/planning/${p.id}`)}
                 style={{ cursor: 'pointer' }}
               >
                 <Typography.Text strong>{p.plan_code}</Typography.Text> — {p.plan_name}
                 <br />
                 <Space size={4} wrap style={{ marginTop: 4 }}>
-                  <Tag color={STATUS_COLOR[p.status] || 'default'}>{(p.status || '').replace(/_/g, ' ')}</Tag>
+                  <Tag color={STATUS_COLOR[p.status] || 'default'}>
+                    {(p.status || '').replace(/_/g, ' ')}
+                  </Tag>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     {p.period} | {p.planned_batches?.length ?? p.batch_count ?? 0} batches
                   </Typography.Text>

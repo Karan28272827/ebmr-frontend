@@ -1,7 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Row, Col, Tag, Button, Space, Alert, Typography, Spin, Descriptions,
-  Modal, Form, Input, message, Grid, Table,
+  Card,
+  Row,
+  Col,
+  Tag,
+  Button,
+  Space,
+  Alert,
+  Typography,
+  Spin,
+  Descriptions,
+  Modal,
+  Form,
+  Input,
+  message,
+  Grid,
+  Table,
 } from 'antd';
 import { ArrowLeftOutlined, LinkOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -29,7 +43,14 @@ const QC_VERDICT_COLOR: Record<string, string> = {
 function expiryAlert(expiryDate: string) {
   const diff = dayjs(expiryDate).diff(dayjs(), 'day');
   if (diff < 0) {
-    return <Alert type="error" showIcon message={`EXPIRED — ${Math.abs(diff)} days ago`} style={{ marginBottom: 16 }} />;
+    return (
+      <Alert
+        type="error"
+        showIcon
+        message={`EXPIRED — ${Math.abs(diff)} days ago`}
+        style={{ marginBottom: 16 }}
+      />
+    );
   }
   if (diff < 30) {
     return (
@@ -122,7 +143,12 @@ export default function ReceiptDetail() {
   const batchUsageColumns = [
     { title: 'Batch Code', dataIndex: 'batch_code', key: 'batch_code' },
     { title: 'Qty Used', dataIndex: 'qty_used', key: 'qty_used' },
-    { title: 'Used At', dataIndex: 'used_at', key: 'used_at', render: (d: string) => dayjs(d).format('DD MMM YYYY') },
+    {
+      title: 'Used At',
+      dataIndex: 'used_at',
+      key: 'used_at',
+      render: (d: string) => dayjs(d).format('DD MMM YYYY'),
+    },
   ];
 
   return (
@@ -144,7 +170,13 @@ export default function ReceiptDetail() {
         </Col>
         <Col>
           {showGrnButton && (
-            <Button type="primary" onClick={() => { grnForm.resetFields(); setGrnModalOpen(true); }}>
+            <Button
+              type="primary"
+              onClick={() => {
+                grnForm.resetFields();
+                setGrnModalOpen(true);
+              }}
+            >
               Move to Stores / Create GRN
             </Button>
           )}
@@ -179,12 +211,22 @@ export default function ReceiptDetail() {
           {/* Supplier Info */}
           <Card title="Supplier Information">
             <Descriptions column={1} size="small" bordered>
-              <Descriptions.Item label="PO Number">{receipt.po?.po_number || '-'}</Descriptions.Item>
-              <Descriptions.Item label="Supplier">{receipt.po?.supplier_name || '-'}</Descriptions.Item>
-              <Descriptions.Item label="Supplier Code">{receipt.po?.supplier_code || '-'}</Descriptions.Item>
-              <Descriptions.Item label="Supplier Batch No.">{receipt.supplier_batch_no || '-'}</Descriptions.Item>
+              <Descriptions.Item label="PO Number">
+                {receipt.po?.po_number || '-'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Supplier">
+                {receipt.po?.supplier_name || '-'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Supplier Code">
+                {receipt.po?.supplier_code || '-'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Supplier Batch No.">
+                {receipt.supplier_batch_no || '-'}
+              </Descriptions.Item>
               <Descriptions.Item label="Manufacture Date">
-                {receipt.manufacture_date ? dayjs(receipt.manufacture_date).format('DD MMM YYYY') : '-'}
+                {receipt.manufacture_date
+                  ? dayjs(receipt.manufacture_date).format('DD MMM YYYY')
+                  : '-'}
               </Descriptions.Item>
               <Descriptions.Item label="Expiry Date">
                 {receipt.expiry_date ? (
@@ -198,7 +240,9 @@ export default function ReceiptDetail() {
                       return <Tag color="success">OK ({diff}d)</Tag>;
                     })()}
                   </Space>
-                ) : '-'}
+                ) : (
+                  '-'
+                )}
               </Descriptions.Item>
               <Descriptions.Item label="CoA Reference">
                 {receipt.coa_reference || <Text type="secondary">Not provided</Text>}
@@ -213,7 +257,13 @@ export default function ReceiptDetail() {
           <Card title="IQC Test" style={{ marginBottom: 16 }}>
             {receipt.qc_tests && receipt.qc_tests.length > 0 ? (
               receipt.qc_tests.map((test: any) => (
-                <Descriptions key={test.id} column={1} size="small" bordered style={{ marginBottom: 8 }}>
+                <Descriptions
+                  key={test.id}
+                  column={1}
+                  size="small"
+                  bordered
+                  style={{ marginBottom: 8 }}
+                >
                   <Descriptions.Item label="Test Code">
                     <Button
                       type="link"
@@ -255,9 +305,7 @@ export default function ReceiptDetail() {
           <Card title="GRN Status" style={{ marginBottom: 16 }}>
             <Descriptions column={1} size="small" bordered>
               <Descriptions.Item label="GRN Number">
-                {receipt.grn?.grn_number || (
-                  <Text type="secondary">Not yet created</Text>
-                )}
+                {receipt.grn?.grn_number || <Text type="secondary">Not yet created</Text>}
               </Descriptions.Item>
               <Descriptions.Item label="Accounts Status">
                 {receipt.grn?.accounts_status ? (
@@ -267,9 +315,7 @@ export default function ReceiptDetail() {
                 )}
               </Descriptions.Item>
               {receipt.grn?.invoice_ref && (
-                <Descriptions.Item label="Invoice Ref">
-                  {receipt.grn.invoice_ref}
-                </Descriptions.Item>
+                <Descriptions.Item label="Invoice Ref">{receipt.grn.invoice_ref}</Descriptions.Item>
               )}
             </Descriptions>
           </Card>

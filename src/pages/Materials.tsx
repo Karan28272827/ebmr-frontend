@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Button, Modal, Form, Input, Select, Space, Typography, Tag, message, Spin,
+  Card,
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Space,
+  Typography,
+  Tag,
+  message,
+  Spin,
 } from 'antd';
 import { PlusOutlined, BarcodeOutlined } from '@ant-design/icons';
 import { authApi } from '../api/axios';
@@ -25,7 +36,9 @@ export default function Materials() {
     }
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const handleCreate = async () => {
     try {
@@ -37,7 +50,8 @@ export default function Materials() {
       form.resetFields();
       load();
     } catch (err: any) {
-      if (!err.errorFields) message.error(err.response?.data?.message || 'Failed to create material');
+      if (!err.errorFields)
+        message.error(err.response?.data?.message || 'Failed to create material');
     } finally {
       setSaving(false);
     }
@@ -55,11 +69,7 @@ export default function Materials() {
     {
       title: 'Barcode',
       render: (_: any, row: any) => (
-        <Button
-          size="small"
-          icon={<BarcodeOutlined />}
-          onClick={() => setBarcodeModal(row)}
-        >
+        <Button size="small" icon={<BarcodeOutlined />} onClick={() => setBarcodeModal(row)}>
           View
         </Button>
       ),
@@ -93,12 +103,20 @@ export default function Materials() {
         title="Add Material"
         open={modalOpen}
         onOk={handleCreate}
-        onCancel={() => { setModalOpen(false); form.resetFields(); }}
+        onCancel={() => {
+          setModalOpen(false);
+          form.resetFields();
+        }}
         confirmLoading={saving}
         okText="Create"
       >
         <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-          <Form.Item name="materialCode" label="Material Code" rules={[{ required: true }]} extra="e.g. RM-PARA-API">
+          <Form.Item
+            name="materialCode"
+            label="Material Code"
+            rules={[{ required: true }]}
+            extra="e.g. RM-PARA-API"
+          >
             <Input placeholder="RM-XXXX" style={{ textTransform: 'uppercase' }} />
           </Form.Item>
           <Form.Item name="materialName" label="Material Name" rules={[{ required: true }]}>
@@ -106,7 +124,11 @@ export default function Materials() {
           </Form.Item>
           <Form.Item name="unit" label="Unit" rules={[{ required: true }]}>
             <Select placeholder="Select unit">
-              {UNITS.map((u) => <Select.Option key={u} value={u}>{u}</Select.Option>)}
+              {UNITS.map((u) => (
+                <Select.Option key={u} value={u}>
+                  {u}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item name="description" label="Description">
@@ -120,15 +142,25 @@ export default function Materials() {
         open={!!barcodeModal}
         onCancel={() => setBarcodeModal(null)}
         footer={[
-          <Button key="print" onClick={() => window.print()}>Print</Button>,
-          <Button key="close" onClick={() => setBarcodeModal(null)}>Close</Button>,
+          <Button key="print" onClick={() => window.print()}>
+            Print
+          </Button>,
+          <Button key="close" onClick={() => setBarcodeModal(null)}>
+            Close
+          </Button>,
         ]}
         centered
       >
         {barcodeModal && (
           <Space direction="vertical" align="center" style={{ width: '100%', padding: '16px 0' }}>
-            <BarcodeLabel value={barcodeModal.materialCode} label={barcodeModal.materialName} height={70} />
-            <Typography.Text type="secondary">{barcodeModal.unit} · {barcodeModal.description}</Typography.Text>
+            <BarcodeLabel
+              value={barcodeModal.materialCode}
+              label={barcodeModal.materialName}
+              height={70}
+            />
+            <Typography.Text type="secondary">
+              {barcodeModal.unit} · {barcodeModal.description}
+            </Typography.Text>
           </Space>
         )}
       </Modal>

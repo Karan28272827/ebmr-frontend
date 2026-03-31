@@ -1,7 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Row, Col, Button, Space, Form, Input, InputNumber, Select, Tag, Typography,
-  Checkbox, message, Grid,
+  Card,
+  Row,
+  Col,
+  Button,
+  Space,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Tag,
+  Typography,
+  Checkbox,
+  message,
+  Grid,
 } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -77,9 +89,7 @@ export default function ProcessFlowNew() {
   };
 
   const updateStage = (key: number, field: keyof StageRow, value: any) => {
-    setStages((prev) =>
-      prev.map((s) => (s.key === key ? { ...s, [field]: value } : s))
-    );
+    setStages((prev) => prev.map((s) => (s.key === key ? { ...s, [field]: value } : s)));
   };
 
   const handleFinish = async (values: any) => {
@@ -106,10 +116,16 @@ export default function ProcessFlowNew() {
           duration_min: s.duration_min ?? undefined,
           critical: s.critical,
           inputs: s.inputs
-            ? s.inputs.split(',').map((v: string) => v.trim()).filter(Boolean)
+            ? s.inputs
+                .split(',')
+                .map((v: string) => v.trim())
+                .filter(Boolean)
             : [],
           outputs: s.outputs
-            ? s.outputs.split(',').map((v: string) => v.trim()).filter(Boolean)
+            ? s.outputs
+                .split(',')
+                .map((v: string) => v.trim())
+                .filter(Boolean)
             : [],
         })),
       };
@@ -127,7 +143,9 @@ export default function ProcessFlowNew() {
     <div style={{ padding: screens.md ? 24 : 12, maxWidth: 900, margin: '0 auto' }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col>
-          <Title level={3} style={{ margin: 0 }}>New Process Flow</Title>
+          <Title level={3} style={{ margin: 0 }}>
+            New Process Flow
+          </Title>
         </Col>
         <Col>
           <Button onClick={() => navigate('/docs')}>Cancel</Button>
@@ -144,10 +162,7 @@ export default function ProcessFlowNew() {
         <Card title="Basic Information" style={{ marginBottom: 16 }}>
           <Row gutter={[16, 0]}>
             <Col xs={24} sm={12}>
-              <Form.Item
-                label="Flow Code (optional — auto-generated if blank)"
-                name="flow_code"
-              >
+              <Form.Item label="Flow Code (optional — auto-generated if blank)" name="flow_code">
                 <Input placeholder="e.g. PF-TAB-001 (leave blank to auto-generate)" />
               </Form.Item>
             </Col>
@@ -323,7 +338,9 @@ export default function ProcessFlowNew() {
                       onChange={(v) => updateStage(stage.key, 'responsible_role', v || '')}
                     >
                       {ROLES.map((r) => (
-                        <Option key={r} value={r}>{r.replace(/_/g, ' ')}</Option>
+                        <Option key={r} value={r}>
+                          {r.replace(/_/g, ' ')}
+                        </Option>
                       ))}
                     </Select>
                   </Form.Item>
@@ -338,7 +355,11 @@ export default function ProcessFlowNew() {
                     />
                   </Form.Item>
                 </Col>
-                <Col xs={12} sm={6} style={{ display: 'flex', alignItems: 'center', paddingTop: 28 }}>
+                <Col
+                  xs={12}
+                  sm={6}
+                  style={{ display: 'flex', alignItems: 'center', paddingTop: 28 }}
+                >
                   <Checkbox
                     checked={stage.critical}
                     onChange={(e) => updateStage(stage.key, 'critical', e.target.checked)}
@@ -347,10 +368,7 @@ export default function ProcessFlowNew() {
                   </Checkbox>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <Form.Item
-                    label="Inputs (comma-separated)"
-                    style={{ marginBottom: 8 }}
-                  >
+                  <Form.Item label="Inputs (comma-separated)" style={{ marginBottom: 8 }}>
                     <Input
                       value={stage.inputs}
                       placeholder="e.g. Raw material, Weighing slip"
@@ -359,10 +377,7 @@ export default function ProcessFlowNew() {
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <Form.Item
-                    label="Outputs (comma-separated)"
-                    style={{ marginBottom: 8 }}
-                  >
+                  <Form.Item label="Outputs (comma-separated)" style={{ marginBottom: 8 }}>
                     <Input
                       value={stage.outputs}
                       placeholder="e.g. Dispensed material, Dispensing record"

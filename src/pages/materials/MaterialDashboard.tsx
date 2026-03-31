@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Space, Tabs, Row, Col, Statistic, Alert, Typography, Spin, message,
+  Card,
+  Table,
+  Tag,
+  Button,
+  Space,
+  Tabs,
+  Row,
+  Col,
+  Statistic,
+  Alert,
+  Typography,
+  Spin,
+  message,
 } from 'antd';
 import {
-  InboxOutlined, ClockCircleOutlined, WarningOutlined, ExperimentOutlined,
+  InboxOutlined,
+  ClockCircleOutlined,
+  WarningOutlined,
+  ExperimentOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -81,7 +96,12 @@ export default function MaterialDashboard() {
   const inStoresCount = stock.reduce((sum: number, s: any) => sum + (s.total_qty > 0 ? 1 : 0), 0);
 
   const stockColumns = [
-    { title: 'Material Code', dataIndex: 'material_code', key: 'material_code', render: (v: string) => <Typography.Text code>{v}</Typography.Text> },
+    {
+      title: 'Material Code',
+      dataIndex: 'material_code',
+      key: 'material_code',
+      render: (v: string) => <Typography.Text code>{v}</Typography.Text>,
+    },
     { title: 'Material Name', dataIndex: 'material_name', key: 'material_name', ellipsis: true },
     {
       title: 'Total Qty',
@@ -111,7 +131,11 @@ export default function MaterialDashboard() {
       title: 'Receipt Code',
       dataIndex: 'receipt_code',
       render: (v: string, r: any) => (
-        <Button type="link" onClick={() => navigate(`/materials/receipts/${r.id}`)} style={{ padding: 0 }}>
+        <Button
+          type="link"
+          onClick={() => navigate(`/materials/receipts/${r.id}`)}
+          style={{ padding: 0 }}
+        >
           {v}
         </Button>
       ),
@@ -119,11 +143,17 @@ export default function MaterialDashboard() {
     { title: 'Supplier', dataIndex: 'supplier', ellipsis: true },
     { title: 'Material', dataIndex: 'material_name', ellipsis: true },
     { title: 'Qty', dataIndex: 'quantity', render: (v: number, r: any) => `${v} ${r.unit || ''}` },
-    { title: 'Received At', dataIndex: 'received_at', render: (v: string) => dayjs(v).format('YYYY-MM-DD') },
+    {
+      title: 'Received At',
+      dataIndex: 'received_at',
+      render: (v: string) => dayjs(v).format('YYYY-MM-DD'),
+    },
     {
       title: 'Actions',
       render: (_: any, r: any) => (
-        <Button size="small" onClick={() => navigate(`/materials/receipts/${r.id}`)}>View</Button>
+        <Button size="small" onClick={() => navigate(`/materials/receipts/${r.id}`)}>
+          View
+        </Button>
       ),
     },
   ];
@@ -133,7 +163,11 @@ export default function MaterialDashboard() {
       title: 'Receipt Code',
       dataIndex: 'receipt_code',
       render: (v: string, r: any) => (
-        <Button type="link" onClick={() => navigate(`/materials/receipts/${r.id}`)} style={{ padding: 0 }}>
+        <Button
+          type="link"
+          onClick={() => navigate(`/materials/receipts/${r.id}`)}
+          style={{ padding: 0 }}
+        >
           {v}
         </Button>
       ),
@@ -141,17 +175,29 @@ export default function MaterialDashboard() {
     { title: 'Material', dataIndex: 'material_name', ellipsis: true },
     { title: 'Supplier', dataIndex: 'supplier', ellipsis: true },
     { title: 'Qty', dataIndex: 'quantity', render: (v: number, r: any) => `${v} ${r.unit || ''}` },
-    { title: 'Received At', dataIndex: 'received_at', render: (v: string) => dayjs(v).format('YYYY-MM-DD') },
+    {
+      title: 'Received At',
+      dataIndex: 'received_at',
+      render: (v: string) => dayjs(v).format('YYYY-MM-DD'),
+    },
     {
       title: 'Expiry',
       dataIndex: 'expiry_date',
       render: (v: string) =>
-        v ? <Typography.Text style={{ color: expiryColor(v) }}>{dayjs(v).format('YYYY-MM-DD')}</Typography.Text> : '—',
+        v ? (
+          <Typography.Text style={{ color: expiryColor(v) }}>
+            {dayjs(v).format('YYYY-MM-DD')}
+          </Typography.Text>
+        ) : (
+          '—'
+        ),
     },
     {
       title: 'QC Status',
       dataIndex: 'qc_status',
-      render: (v: string) => <Tag color={QC_STATUS_COLOR[v] || 'default'}>{v?.replace(/_/g, ' ')}</Tag>,
+      render: (v: string) => (
+        <Tag color={QC_STATUS_COLOR[v] || 'default'}>{v?.replace(/_/g, ' ')}</Tag>
+      ),
     },
   ];
 
@@ -163,7 +209,9 @@ export default function MaterialDashboard() {
       title: 'Expiry Date',
       dataIndex: 'expiry_date',
       render: (v: string) => (
-        <Typography.Text style={{ color: expiryColor(v) }}>{dayjs(v).format('YYYY-MM-DD')}</Typography.Text>
+        <Typography.Text style={{ color: expiryColor(v) }}>
+          {dayjs(v).format('YYYY-MM-DD')}
+        </Typography.Text>
       ),
     },
     { title: 'Days Left', dataIndex: 'days_to_expiry', render: (v: number) => `${v} days` },
@@ -196,14 +244,26 @@ export default function MaterialDashboard() {
       key: 'stock',
       label: 'Stock Register',
       children: (
-        <Table dataSource={stock} columns={stockColumns} rowKey="id" pagination={{ pageSize: 20 }} size="middle" />
+        <Table
+          dataSource={stock}
+          columns={stockColumns}
+          rowKey="id"
+          pagination={{ pageSize: 20 }}
+          size="middle"
+        />
       ),
     },
     {
       key: 'pending_iqc',
       label: `Pending IQC (${pendingIqc.length})`,
       children: (
-        <Table dataSource={pendingIqc} columns={pendingIqcColumns} rowKey="id" pagination={{ pageSize: 20 }} size="middle" />
+        <Table
+          dataSource={pendingIqc}
+          columns={pendingIqcColumns}
+          rowKey="id"
+          pagination={{ pageSize: 20 }}
+          size="middle"
+        />
       ),
     },
     {
@@ -216,7 +276,10 @@ export default function MaterialDashboard() {
           rowKey="id"
           pagination={{ pageSize: 20 }}
           size="middle"
-          onRow={(r) => ({ onClick: () => navigate(`/materials/receipts/${r.id}`), style: { cursor: 'pointer' } })}
+          onRow={(r) => ({
+            onClick: () => navigate(`/materials/receipts/${r.id}`),
+            style: { cursor: 'pointer' },
+          })}
         />
       ),
     },
@@ -224,14 +287,29 @@ export default function MaterialDashboard() {
       key: 'expiry_alerts',
       label: `Expiry Alerts (${expiryAlerts.length})`,
       children: (
-        <Table dataSource={expiryAlerts} columns={alertColumns} rowKey="id" pagination={{ pageSize: 20 }} size="middle" />
+        <Table
+          dataSource={expiryAlerts}
+          columns={alertColumns}
+          rowKey="id"
+          pagination={{ pageSize: 20 }}
+          size="middle"
+        />
       ),
     },
   ];
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 16,
+          flexWrap: 'wrap',
+          gap: 8,
+        }}
+      >
         <Typography.Title level={4} style={{ margin: 0 }}>
           Material Dashboard
         </Typography.Title>
@@ -247,7 +325,12 @@ export default function MaterialDashboard() {
           type="error"
           showIcon
           message={`${criticalAlerts.length} CRITICAL expiry alert(s) require attention`}
-          description={criticalAlerts.map((a: any) => `${a.material_name} (${a.material_code}) — expires ${dayjs(a.expiry_date).format('YYYY-MM-DD')}`).join(', ')}
+          description={criticalAlerts
+            .map(
+              (a: any) =>
+                `${a.material_name} (${a.material_code}) — expires ${dayjs(a.expiry_date).format('YYYY-MM-DD')}`,
+            )
+            .join(', ')}
           style={{ marginBottom: 16 }}
         />
       )}
@@ -255,11 +338,7 @@ export default function MaterialDashboard() {
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={12} sm={12} md={6}>
           <Card>
-            <Statistic
-              title="Total Materials"
-              value={stock.length}
-              prefix={<InboxOutlined />}
-            />
+            <Statistic title="Total Materials" value={stock.length} prefix={<InboxOutlined />} />
           </Card>
         </Col>
         <Col xs={12} sm={12} md={6}>

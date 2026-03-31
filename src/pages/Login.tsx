@@ -27,14 +27,26 @@ export default function Login() {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0f2f5' }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#f0f2f5',
+      }}
+    >
       <Space direction="vertical" size={16} style={{ width: 400 }}>
         <Card>
           <Typography.Title level={3} style={{ textAlign: 'center', marginBottom: 24 }}>
             eBMR System Login
           </Typography.Title>
           {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 16 }} />}
-          <Form onFinish={onFinish} layout="vertical" initialValues={{ email: 'batch_operator@ebmr.dev', password: 'Test@1234' }}>
+          <Form
+            onFinish={onFinish}
+            layout="vertical"
+            initialValues={{ email: 'batch_operator@ebmr.dev', password: 'Test@1234' }}
+          >
             <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
               <Input prefix={<MailOutlined />} size="large" />
             </Form.Item>
@@ -46,7 +58,11 @@ export default function Login() {
             </Button>
           </Form>
         </Card>
-        <Card title="Test Credentials (all use password: Test@1234)" size="small" style={{ fontSize: 12 }}>
+        <Card
+          title="Test Credentials (all use password: Test@1234)"
+          size="small"
+          style={{ fontSize: 12 }}
+        >
           {TEST_USERS.map((u) => (
             <div key={u.email} style={{ marginBottom: 4, fontFamily: 'monospace', fontSize: 11 }}>
               <strong>{u.role}:</strong> {u.email}

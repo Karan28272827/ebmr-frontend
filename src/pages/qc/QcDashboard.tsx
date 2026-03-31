@@ -1,7 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Tabs, Row, Col, Statistic, Spin, Typography, message } from 'antd';
 import {
-  ExperimentOutlined, CheckCircleOutlined, ClockCircleOutlined, PercentageOutlined,
+  Card,
+  Table,
+  Tag,
+  Button,
+  Tabs,
+  Row,
+  Col,
+  Statistic,
+  Spin,
+  Typography,
+  message,
+} from 'antd';
+import {
+  ExperimentOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  PercentageOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -47,9 +62,7 @@ export default function QcDashboard() {
     load();
   }, []);
 
-  const filteredTests = stageFilter
-    ? tests.filter((t) => t.qc_stage === stageFilter)
-    : tests;
+  const filteredTests = stageFilter ? tests.filter((t) => t.qc_stage === stageFilter) : tests;
 
   const columns = [
     {
@@ -79,7 +92,13 @@ export default function QcDashboard() {
       ),
     },
     { title: 'Batch / Receipt', dataIndex: 'reference', key: 'reference', ellipsis: true },
-    { title: 'Assigned To', dataIndex: 'assigned_to', key: 'assigned_to', ellipsis: true, render: (v: any) => v?.name || v || '—' },
+    {
+      title: 'Assigned To',
+      dataIndex: 'assigned_to',
+      key: 'assigned_to',
+      ellipsis: true,
+      render: (v: any) => v?.name || v || '—',
+    },
     {
       title: 'Initiated At',
       dataIndex: 'initiated_at',
@@ -126,7 +145,14 @@ export default function QcDashboard() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 16,
+        }}
+      >
         <Typography.Title level={4} style={{ margin: 0 }}>
           QC Dashboard
         </Typography.Title>
@@ -180,10 +206,7 @@ export default function QcDashboard() {
       </Row>
 
       <Card>
-        <Tabs
-          items={tabItems}
-          defaultActiveKey=""
-        />
+        <Tabs items={tabItems} defaultActiveKey="" />
       </Card>
     </div>
   );

@@ -1,7 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Space, Typography, Spin, Input, Checkbox, Progress,
-  Row, Col, Select, Divider, message, Descriptions, Alert,
+  Card,
+  Table,
+  Tag,
+  Button,
+  Space,
+  Typography,
+  Spin,
+  Input,
+  Checkbox,
+  Progress,
+  Row,
+  Col,
+  Select,
+  Divider,
+  message,
+  Descriptions,
+  Alert,
 } from 'antd';
 import { Grid } from 'antd';
 import { ArrowLeftOutlined, CheckOutlined } from '@ant-design/icons';
@@ -75,8 +90,10 @@ export default function QcTestDetail() {
   const calcStatus = (param: any, value: string): 'PASS' | 'FAIL' | null => {
     const num = parseFloat(value);
     if (isNaN(num)) return null;
-    if (param.min_value !== undefined && param.min_value !== null && num < param.min_value) return 'FAIL';
-    if (param.max_value !== undefined && param.max_value !== null && num > param.max_value) return 'FAIL';
+    if (param.min_value !== undefined && param.min_value !== null && num < param.min_value)
+      return 'FAIL';
+    if (param.max_value !== undefined && param.max_value !== null && num > param.max_value)
+      return 'FAIL';
     return 'PASS';
   };
 
@@ -112,7 +129,10 @@ export default function QcTestDetail() {
   };
 
   const handleRecordVerdict = async () => {
-    if (!verdict) { message.warning('Please select a verdict'); return; }
+    if (!verdict) {
+      message.warning('Please select a verdict');
+      return;
+    }
     setRecordingVerdict(true);
     try {
       await authApi.patch(`/qc/tests/${id}/verdict`, { verdict, notes: verdictNotes });
@@ -141,11 +161,15 @@ export default function QcTestDetail() {
       width: 160,
       render: (_: any, p: any) => (
         <Space size={4}>
-          <Typography.Text type="secondary" style={{ fontSize: 12 }}>{p.min_value ?? '—'}</Typography.Text>
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            {p.min_value ?? '—'}
+          </Typography.Text>
           <Typography.Text>|</Typography.Text>
           <Typography.Text>{p.target_value ?? '—'}</Typography.Text>
           <Typography.Text>|</Typography.Text>
-          <Typography.Text type="secondary" style={{ fontSize: 12 }}>{p.max_value ?? '—'}</Typography.Text>
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            {p.max_value ?? '—'}
+          </Typography.Text>
         </Space>
       ),
     },
@@ -190,8 +214,7 @@ export default function QcTestDetail() {
       title: '',
       key: 'mandatory',
       width: 90,
-      render: (_: any, p: any) =>
-        p.is_mandatory ? <Tag color="red">Required</Tag> : null,
+      render: (_: any, p: any) => (p.is_mandatory ? <Tag color="red">Required</Tag> : null),
     },
   ];
 
@@ -208,9 +231,13 @@ export default function QcTestDetail() {
         <Descriptions
           title={
             <Space wrap>
-              <Typography.Text strong style={{ fontSize: 16 }}>{test.test_code}</Typography.Text>
+              <Typography.Text strong style={{ fontSize: 16 }}>
+                {test.test_code}
+              </Typography.Text>
               <Tag color={STAGE_COLOR[test.qc_stage] || 'default'}>{test.qc_stage}</Tag>
-              <Tag color={STATUS_COLOR[test.status] || 'default'}>{test.status?.replace(/_/g, ' ')}</Tag>
+              <Tag color={STATUS_COLOR[test.status] || 'default'}>
+                {test.status?.replace(/_/g, ' ')}
+              </Tag>
             </Space>
           }
           size="small"
@@ -233,7 +260,15 @@ export default function QcTestDetail() {
           </Descriptions.Item>
           {test.verdict && (
             <Descriptions.Item label="Verdict">
-              <Tag color={test.verdict === 'PASS' ? 'success' : test.verdict === 'FAIL' ? 'error' : 'warning'}>
+              <Tag
+                color={
+                  test.verdict === 'PASS'
+                    ? 'success'
+                    : test.verdict === 'FAIL'
+                      ? 'error'
+                      : 'warning'
+                }
+              >
                 {test.verdict}
               </Tag>
             </Descriptions.Item>
@@ -270,7 +305,11 @@ export default function QcTestDetail() {
                   <div style={{ flex: 1 }}>
                     <Typography.Text>
                       {item.instruction}
-                      {item.is_mandatory && <Tag color="red" style={{ marginLeft: 8 }}>Required</Tag>}
+                      {item.is_mandatory && (
+                        <Tag color="red" style={{ marginLeft: 8 }}>
+                          Required
+                        </Tag>
+                      )}
                     </Typography.Text>
                     {item.requires_value && (
                       <Input
@@ -341,11 +380,14 @@ export default function QcTestDetail() {
                     >
                       <Space direction="vertical" style={{ width: '100%' }}>
                         <Typography.Text type="secondary">
-                          Unit: {p.unit || '—'} | Min: {p.min_value ?? '—'} | Target: {p.target_value ?? '—'} | Max: {p.max_value ?? '—'}
+                          Unit: {p.unit || '—'} | Min: {p.min_value ?? '—'} | Target:{' '}
+                          {p.target_value ?? '—'} | Max: {p.max_value ?? '—'}
                         </Typography.Text>
                         <Input
                           value={resultValues[p.id] || ''}
-                          onChange={(e) => setResultValues((prev) => ({ ...prev, [p.id]: e.target.value }))}
+                          onChange={(e) =>
+                            setResultValues((prev) => ({ ...prev, [p.id]: e.target.value }))
+                          }
                           placeholder="Enter actual value"
                           suffix={p.unit || ''}
                           size="large"
@@ -353,7 +395,9 @@ export default function QcTestDetail() {
                         />
                         <Input
                           value={resultNotes[p.id] || ''}
-                          onChange={(e) => setResultNotes((prev) => ({ ...prev, [p.id]: e.target.value }))}
+                          onChange={(e) =>
+                            setResultNotes((prev) => ({ ...prev, [p.id]: e.target.value }))
+                          }
                           placeholder="Notes (optional)"
                           disabled={test.status === 'COMPLETED'}
                         />
@@ -395,7 +439,15 @@ export default function QcTestDetail() {
           {test.verdict ? (
             <Descriptions size="small" column={1}>
               <Descriptions.Item label="Verdict">
-                <Tag color={test.verdict === 'PASS' ? 'success' : test.verdict === 'FAIL' ? 'error' : 'warning'}>
+                <Tag
+                  color={
+                    test.verdict === 'PASS'
+                      ? 'success'
+                      : test.verdict === 'FAIL'
+                        ? 'error'
+                        : 'warning'
+                  }
+                >
                   {test.verdict}
                 </Tag>
               </Descriptions.Item>

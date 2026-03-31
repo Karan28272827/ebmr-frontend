@@ -1,10 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Steps, Card, Form, Input, Button, Typography, Space, Table, DatePicker, Select,
-  InputNumber, message, Tag, Alert, Spin, Modal, Grid, Row, Col,
+  Steps,
+  Card,
+  Form,
+  Input,
+  Button,
+  Typography,
+  Space,
+  Table,
+  DatePicker,
+  Select,
+  InputNumber,
+  message,
+  Tag,
+  Alert,
+  Spin,
+  Modal,
+  Grid,
+  Row,
+  Col,
 } from 'antd';
 import {
-  PlusOutlined, DeleteOutlined, ArrowLeftOutlined, WarningOutlined, CheckCircleOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  ArrowLeftOutlined,
+  WarningOutlined,
+  CheckCircleOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -150,7 +171,12 @@ export default function PlanNew() {
 
   const batchColumns = [
     { title: 'Product', dataIndex: 'product_name', key: 'product_name' },
-    { title: 'Batch Size', dataIndex: 'batch_size', key: 'batch_size', render: (v: number) => `${v} kg` },
+    {
+      title: 'Batch Size',
+      dataIndex: 'batch_size',
+      key: 'batch_size',
+      render: (v: number) => `${v} kg`,
+    },
     { title: 'Line', dataIndex: 'production_line', key: 'production_line' },
     {
       title: 'Planned Start',
@@ -169,7 +195,8 @@ export default function PlanNew() {
       dataIndex: 'priority',
       key: 'priority',
       render: (v: string) => {
-        const color = v === 'CRITICAL' ? 'red' : v === 'HIGH' ? 'orange' : v === 'MEDIUM' ? 'blue' : 'default';
+        const color =
+          v === 'CRITICAL' ? 'red' : v === 'HIGH' ? 'orange' : v === 'MEDIUM' ? 'blue' : 'default';
         return <Tag color={color}>{v}</Tag>;
       },
     },
@@ -193,35 +220,47 @@ export default function PlanNew() {
     {
       title: 'Status',
       key: 'status',
-      render: (_: any, r: any) => (
-        r.has_shortages
-          ? <Tag color="error"><WarningOutlined /> Shortage</Tag>
-          : <Tag color="success"><CheckCircleOutlined /> OK</Tag>
-      ),
+      render: (_: any, r: any) =>
+        r.has_shortages ? (
+          <Tag color="error">
+            <WarningOutlined /> Shortage
+          </Tag>
+        ) : (
+          <Tag color="success">
+            <CheckCircleOutlined /> OK
+          </Tag>
+        ),
     },
     {
       title: 'Shortages',
       key: 'shortages',
       render: (_: any, r: any) =>
-        r.shortages?.length > 0
-          ? r.shortages.map((s: any, i: number) => (
-              <div key={i} style={{ fontSize: 12 }}>
-                <Typography.Text type="danger">{s.material_name}: need {s.required} {s.unit}, have {s.available} {s.unit}</Typography.Text>
-              </div>
-            ))
-          : <Typography.Text type="secondary">—</Typography.Text>,
+        r.shortages?.length > 0 ? (
+          r.shortages.map((s: any, i: number) => (
+            <div key={i} style={{ fontSize: 12 }}>
+              <Typography.Text type="danger">
+                {s.material_name}: need {s.required} {s.unit}, have {s.available} {s.unit}
+              </Typography.Text>
+            </div>
+          ))
+        ) : (
+          <Typography.Text type="secondary">—</Typography.Text>
+        ),
     },
     {
       title: 'FEFO Recommendations',
       key: 'fefo',
       render: (_: any, r: any) =>
-        r.fefo_recommendations?.length > 0
-          ? r.fefo_recommendations.map((f: any, i: number) => (
-              <div key={i} style={{ fontSize: 12 }}>
-                {f.material_name}: use batch {f.receipt_code} (exp {dayjs(f.expiry_date).format('YYYY-MM-DD')})
-              </div>
-            ))
-          : <Typography.Text type="secondary">—</Typography.Text>,
+        r.fefo_recommendations?.length > 0 ? (
+          r.fefo_recommendations.map((f: any, i: number) => (
+            <div key={i} style={{ fontSize: 12 }}>
+              {f.material_name}: use batch {f.receipt_code} (exp{' '}
+              {dayjs(f.expiry_date).format('YYYY-MM-DD')})
+            </div>
+          ))
+        ) : (
+          <Typography.Text type="secondary">—</Typography.Text>
+        ),
     },
   ];
 
@@ -258,12 +297,7 @@ export default function PlanNew() {
       {/* Step 0: Plan Details */}
       {currentStep === 0 && (
         <Card title="Plan Details">
-          <Form
-            form={planForm}
-            layout={formLayout}
-            labelCol={labelCol}
-            wrapperCol={wrapperCol}
-          >
+          <Form form={planForm} layout={formLayout} labelCol={labelCol} wrapperCol={wrapperCol}>
             <Form.Item
               name="plan_name"
               label="Plan Name"
@@ -301,7 +335,9 @@ export default function PlanNew() {
           }
         >
           {batches.length === 0 ? (
-            <Typography.Text type="secondary">No batches added yet. Click "Add Batch" to begin.</Typography.Text>
+            <Typography.Text type="secondary">
+              No batches added yet. Click "Add Batch" to begin.
+            </Typography.Text>
           ) : (
             <Table
               dataSource={batches}
@@ -371,7 +407,8 @@ export default function PlanNew() {
               />
             )}
             <Typography.Text>
-              Plan is ready to be submitted for approval. Once submitted, a QA Manager can approve it.
+              Plan is ready to be submitted for approval. Once submitted, a QA Manager can approve
+              it.
             </Typography.Text>
             <Row gutter={16}>
               <Col>
@@ -387,12 +424,7 @@ export default function PlanNew() {
             </Row>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               <Button onClick={() => setCurrentStep(2)}>Back</Button>
-              <Button
-                type="primary"
-                size="large"
-                onClick={handleSubmit}
-                loading={saving}
-              >
+              <Button type="primary" size="large" onClick={handleSubmit} loading={saving}>
                 Submit for Approval
               </Button>
             </div>
@@ -404,7 +436,10 @@ export default function PlanNew() {
       <Modal
         title="Add Planned Batch"
         open={addBatchVisible}
-        onCancel={() => { setAddBatchVisible(false); batchForm.resetFields(); }}
+        onCancel={() => {
+          setAddBatchVisible(false);
+          batchForm.resetFields();
+        }}
         onOk={handleAddBatch}
         okText="Add Batch"
         confirmLoading={addingBatch}
@@ -458,15 +493,8 @@ export default function PlanNew() {
           >
             <DatePicker showTime style={{ width: '100%' }} size="large" />
           </Form.Item>
-          <Form.Item
-            name="priority"
-            label="Priority"
-            initialValue="MEDIUM"
-          >
-            <Select
-              size="large"
-              options={PRIORITIES.map((p) => ({ value: p, label: p }))}
-            />
+          <Form.Item name="priority" label="Priority" initialValue="MEDIUM">
+            <Select size="large" options={PRIORITIES.map((p) => ({ value: p, label: p }))} />
           </Form.Item>
         </Form>
       </Modal>

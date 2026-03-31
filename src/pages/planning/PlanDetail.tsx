@@ -1,10 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Typography, Space, Spin, message, Modal, Form,
-  Input, Select, Descriptions, Badge, Grid, Row, Col, Alert,
+  Card,
+  Table,
+  Tag,
+  Button,
+  Typography,
+  Space,
+  Spin,
+  message,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Descriptions,
+  Badge,
+  Grid,
+  Row,
+  Col,
+  Alert,
 } from 'antd';
 import {
-  ArrowLeftOutlined, CheckCircleOutlined, PlayCircleOutlined, WarningOutlined,
+  ArrowLeftOutlined,
+  CheckCircleOutlined,
+  PlayCircleOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -72,11 +91,14 @@ export default function PlanDetail() {
     }
   };
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => {
+    load();
+  }, [id]);
 
   useEffect(() => {
     if (initiateVisible) {
-      authApi.get('/batch-templates')
+      authApi
+        .get('/batch-templates')
         .then((r) => setTemplates(Array.isArray(r.data) ? r.data : []))
         .catch(() => setTemplates([]));
     }
@@ -127,7 +149,8 @@ export default function PlanDetail() {
 
   const expandedRowRender = (record: any) => {
     const sim = record.simulation_result;
-    if (!sim) return <Typography.Text type="secondary">No simulation data available.</Typography.Text>;
+    if (!sim)
+      return <Typography.Text type="secondary">No simulation data available.</Typography.Text>;
 
     return (
       <div style={{ padding: '8px 0' }}>
@@ -142,16 +165,29 @@ export default function PlanDetail() {
             size="small"
             columns={[
               { title: 'Material', dataIndex: 'material_name', key: 'material_name' },
-              { title: 'Required', dataIndex: 'required_qty', key: 'required_qty', render: (v: any, r: any) => `${v} ${r.unit}` },
-              { title: 'Available', dataIndex: 'available_qty', key: 'available_qty', render: (v: any, r: any) => `${v} ${r.unit}` },
+              {
+                title: 'Required',
+                dataIndex: 'required_qty',
+                key: 'required_qty',
+                render: (v: any, r: any) => `${v} ${r.unit}`,
+              },
+              {
+                title: 'Available',
+                dataIndex: 'available_qty',
+                key: 'available_qty',
+                render: (v: any, r: any) => `${v} ${r.unit}`,
+              },
               {
                 title: 'Status',
                 key: 'check_status',
-                render: (_: any, r: any) => (
-                  r.available_qty >= r.required_qty
-                    ? <Tag color="success">OK</Tag>
-                    : <Tag color="error">Shortage: {r.required_qty - r.available_qty} {r.unit}</Tag>
-                ),
+                render: (_: any, r: any) =>
+                  r.available_qty >= r.required_qty ? (
+                    <Tag color="success">OK</Tag>
+                  ) : (
+                    <Tag color="error">
+                      Shortage: {r.required_qty - r.available_qty} {r.unit}
+                    </Tag>
+                  ),
               },
               {
                 title: 'FEFO Batch',
@@ -171,7 +207,12 @@ export default function PlanDetail() {
   const batchColumns = [
     { title: '#', key: 'index', width: 50, render: (_: any, __: any, i: number) => i + 1 },
     { title: 'Product', dataIndex: 'product_name', key: 'product_name' },
-    { title: 'Batch Size', dataIndex: 'batch_size', key: 'batch_size', render: (v: number) => `${v} kg` },
+    {
+      title: 'Batch Size',
+      dataIndex: 'batch_size',
+      key: 'batch_size',
+      render: (v: number) => `${v} kg`,
+    },
     { title: 'Production Line', dataIndex: 'production_line', key: 'production_line' },
     {
       title: 'Planned Start',
@@ -189,23 +230,34 @@ export default function PlanDetail() {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (v: string) => <Tag color={BATCH_STATUS_COLOR[v] || 'default'}>{(v || 'PLANNED').replace(/_/g, ' ')}</Tag>,
+      render: (v: string) => (
+        <Tag color={BATCH_STATUS_COLOR[v] || 'default'}>{(v || 'PLANNED').replace(/_/g, ' ')}</Tag>
+      ),
     },
     {
       title: 'Simulation',
       key: 'simulation',
       render: (_: any, r: any) => {
         if (!r.simulation_result) return <Tag>Not Run</Tag>;
-        return r.simulation_result.has_shortages
-          ? <Tag color="error"><WarningOutlined /> Shortage</Tag>
-          : <Tag color="success"><CheckCircleOutlined /> OK</Tag>;
+        return r.simulation_result.has_shortages ? (
+          <Tag color="error">
+            <WarningOutlined /> Shortage
+          </Tag>
+        ) : (
+          <Tag color="success">
+            <CheckCircleOutlined /> OK
+          </Tag>
+        );
       },
     },
     {
       title: 'Actions',
       key: 'actions',
-      render: (_: any, r: any) => (
-        isSupervisor && plan?.status === 'APPROVED' && r.status !== 'INITIATED' && r.status !== 'COMPLETED' ? (
+      render: (_: any, r: any) =>
+        isSupervisor &&
+        plan?.status === 'APPROVED' &&
+        r.status !== 'INITIATED' &&
+        r.status !== 'COMPLETED' ? (
           <Button
             size="small"
             type="primary"
@@ -214,8 +266,7 @@ export default function PlanDetail() {
           >
             Initiate Batch
           </Button>
-        ) : null
-      ),
+        ) : null,
     },
   ];
 
@@ -238,10 +289,14 @@ export default function PlanDetail() {
         style={{ marginBottom: 16 }}
         title={
           <Space wrap>
-            <Typography.Text strong style={{ fontSize: 16 }}>{plan.plan_code}</Typography.Text>
+            <Typography.Text strong style={{ fontSize: 16 }}>
+              {plan.plan_code}
+            </Typography.Text>
             <Typography.Text>{plan.plan_name}</Typography.Text>
             <Tag>{plan.period}</Tag>
-            <Tag color={STATUS_COLOR[plan.status] || 'default'}>{(plan.status || '').replace(/_/g, ' ')}</Tag>
+            <Tag color={STATUS_COLOR[plan.status] || 'default'}>
+              {(plan.status || '').replace(/_/g, ' ')}
+            </Tag>
           </Space>
         }
         extra={
@@ -267,7 +322,9 @@ export default function PlanDetail() {
           </Descriptions.Item>
           <Descriptions.Item label="Approved By">{plan.approved_by?.name || '—'}</Descriptions.Item>
           {plan.description && (
-            <Descriptions.Item label="Description" span={3}>{plan.description}</Descriptions.Item>
+            <Descriptions.Item label="Description" span={3}>
+              {plan.description}
+            </Descriptions.Item>
           )}
         </Descriptions>
       </Card>
@@ -295,7 +352,10 @@ export default function PlanDetail() {
       <Modal
         title={`Initiate Batch — ${selectedBatch?.product_name || ''}`}
         open={initiateVisible}
-        onCancel={() => { setInitiateVisible(false); setSelectedBatch(null); }}
+        onCancel={() => {
+          setInitiateVisible(false);
+          setSelectedBatch(null);
+        }}
         onOk={handleInitiate}
         okText="Initiate Batch"
         confirmLoading={initiating}
@@ -322,7 +382,10 @@ export default function PlanDetail() {
               placeholder="Select template"
               allowClear
               size="large"
-              options={templates.map((t) => ({ value: t.id, label: `${t.template_code} — ${t.name}` }))}
+              options={templates.map((t) => ({
+                value: t.id,
+                label: `${t.template_code} — ${t.name}`,
+              }))}
             />
           </Form.Item>
         </Form>

@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Tag, Button, Space, Typography, Descriptions, Alert, Input, Select, message, Spin,
+  Card,
+  Tag,
+  Button,
+  Space,
+  Typography,
+  Descriptions,
+  Alert,
+  Input,
+  Select,
+  message,
+  Spin,
 } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -9,13 +19,23 @@ import { authApi } from '../api/axios';
 import { useAppSelector } from '../store/hooks';
 
 const SEVERITY_COLOR: Record<string, string> = {
-  LOW: 'default', MEDIUM: 'blue', HIGH: 'orange', CRITICAL: 'red',
+  LOW: 'default',
+  MEDIUM: 'blue',
+  HIGH: 'orange',
+  CRITICAL: 'red',
 };
 const STATUS_COLOR: Record<string, string> = {
-  OPEN: 'error', IN_PROGRESS: 'processing', RESOLVED: 'success', CLOSED: 'default',
+  OPEN: 'error',
+  IN_PROGRESS: 'processing',
+  RESOLVED: 'success',
+  CLOSED: 'default',
 };
 const ROLE_LEVEL: Record<string, number> = {
-  BATCH_OPERATOR: 1, SUPERVISOR: 2, QA_REVIEWER: 3, QA_MANAGER: 4, QUALIFIED_PERSON: 5,
+  BATCH_OPERATOR: 1,
+  SUPERVISOR: 2,
+  QA_REVIEWER: 3,
+  QA_MANAGER: 4,
+  QUALIFIED_PERSON: 5,
 };
 
 export default function IssueDetail() {
@@ -36,7 +56,9 @@ export default function IssueDetail() {
     }
   };
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => {
+    load();
+  }, [id]);
 
   const isSupervisor = (ROLE_LEVEL[user?.role || ''] || 0) >= ROLE_LEVEL.SUPERVISOR;
   const isQA = (ROLE_LEVEL[user?.role || ''] || 0) >= ROLE_LEVEL.QA_REVIEWER;
@@ -55,7 +77,10 @@ export default function IssueDetail() {
   };
 
   const handleResolve = async () => {
-    if (!resolution.trim()) { message.warning('Enter resolution notes'); return; }
+    if (!resolution.trim()) {
+      message.warning('Enter resolution notes');
+      return;
+    }
     setActionLoading(true);
     try {
       await authApi.put(`/issues/${id}/resolve`, { resolution });
@@ -87,7 +112,11 @@ export default function IssueDetail() {
 
   return (
     <div>
-      <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/issues')} style={{ marginBottom: 16 }}>
+      <Button
+        icon={<ArrowLeftOutlined />}
+        onClick={() => navigate('/issues')}
+        style={{ marginBottom: 16 }}
+      >
         Back to Issues
       </Button>
 
@@ -95,7 +124,9 @@ export default function IssueDetail() {
         title={
           <Space>
             <Tag color={SEVERITY_COLOR[issue.severity]}>{issue.severity}</Tag>
-            <Typography.Text strong style={{ fontSize: 16 }}>{issue.title}</Typography.Text>
+            <Typography.Text strong style={{ fontSize: 16 }}>
+              {issue.title}
+            </Typography.Text>
             <Tag color={STATUS_COLOR[issue.status]}>{issue.status.replace('_', ' ')}</Tag>
           </Space>
         }
@@ -120,11 +151,19 @@ export default function IssueDetail() {
         }
       >
         <Descriptions column={2} style={{ marginBottom: 16 }}>
-          <Descriptions.Item label="Raised By">{issue.raiser?.name} ({issue.raiser?.role})</Descriptions.Item>
-          <Descriptions.Item label="Raised At">{dayjs(issue.raisedAt).format('YYYY-MM-DD HH:mm')}</Descriptions.Item>
+          <Descriptions.Item label="Raised By">
+            {issue.raiser?.name} ({issue.raiser?.role})
+          </Descriptions.Item>
+          <Descriptions.Item label="Raised At">
+            {dayjs(issue.raisedAt).format('YYYY-MM-DD HH:mm')}
+          </Descriptions.Item>
           {issue.batch && (
             <Descriptions.Item label="Batch">
-              <Button type="link" style={{ padding: 0 }} onClick={() => navigate(`/batches/${issue.batchId}`)}>
+              <Button
+                type="link"
+                style={{ padding: 0 }}
+                onClick={() => navigate(`/batches/${issue.batchId}`)}
+              >
                 {issue.batch.batchNumber} — {issue.batch.productName}
               </Button>
             </Descriptions.Item>
@@ -136,7 +175,9 @@ export default function IssueDetail() {
             <Descriptions.Item label="Resolved By">{issue.resolver?.name}</Descriptions.Item>
           )}
           {issue.resolvedAt && (
-            <Descriptions.Item label="Resolved At">{dayjs(issue.resolvedAt).format('YYYY-MM-DD HH:mm')}</Descriptions.Item>
+            <Descriptions.Item label="Resolved At">
+              {dayjs(issue.resolvedAt).format('YYYY-MM-DD HH:mm')}
+            </Descriptions.Item>
           )}
         </Descriptions>
 
@@ -159,7 +200,12 @@ export default function IssueDetail() {
                 value={resolution}
                 onChange={(e) => setResolution(e.target.value)}
               />
-              <Button type="primary" loading={actionLoading} onClick={handleResolve} style={{ marginTop: 8 }}>
+              <Button
+                type="primary"
+                loading={actionLoading}
+                onClick={handleResolve}
+                style={{ marginTop: 8 }}
+              >
                 Mark as Resolved
               </Button>
             </Space.Compact>

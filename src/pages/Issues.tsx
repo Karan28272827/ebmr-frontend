@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Button, Modal, Form, Input, Select, Space, Tag, Typography, message, Spin,
+  Card,
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Space,
+  Tag,
+  Typography,
+  message,
+  Spin,
 } from 'antd';
 import { PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -8,10 +19,16 @@ import dayjs from 'dayjs';
 import { authApi } from '../api/axios';
 
 const SEVERITY_COLOR: Record<string, string> = {
-  LOW: 'default', MEDIUM: 'blue', HIGH: 'orange', CRITICAL: 'red',
+  LOW: 'default',
+  MEDIUM: 'blue',
+  HIGH: 'orange',
+  CRITICAL: 'red',
 };
 const STATUS_COLOR: Record<string, string> = {
-  OPEN: 'error', IN_PROGRESS: 'processing', RESOLVED: 'success', CLOSED: 'default',
+  OPEN: 'error',
+  IN_PROGRESS: 'processing',
+  RESOLVED: 'success',
+  CLOSED: 'default',
 };
 
 export default function Issues() {
@@ -39,7 +56,9 @@ export default function Issues() {
     }
   };
 
-  useEffect(() => { load(); }, [statusFilter]);
+  useEffect(() => {
+    load();
+  }, [statusFilter]);
 
   const handleCreate = async () => {
     try {
@@ -95,7 +114,11 @@ export default function Issues() {
   return (
     <div>
       <Card
-        title={<Space><ExclamationCircleOutlined /> Production Issues</Space>}
+        title={
+          <Space>
+            <ExclamationCircleOutlined /> Production Issues
+          </Space>
+        }
         extra={
           <Space>
             <Select
@@ -103,7 +126,10 @@ export default function Issues() {
               allowClear
               style={{ width: 160 }}
               onChange={setStatusFilter}
-              options={['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'].map((s) => ({ value: s, label: s.replace('_', ' ') }))}
+              options={['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'].map((s) => ({
+                value: s,
+                label: s.replace('_', ' '),
+              }))}
             />
             <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
               Raise Issue
@@ -129,7 +155,10 @@ export default function Issues() {
         title="Raise Issue"
         open={modalOpen}
         onOk={handleCreate}
-        onCancel={() => { setModalOpen(false); form.resetFields(); }}
+        onCancel={() => {
+          setModalOpen(false);
+          form.resetFields();
+        }}
         confirmLoading={saving}
         okText="Raise Issue"
         width={520}
@@ -139,7 +168,10 @@ export default function Issues() {
             <Input placeholder="Brief description of the issue" />
           </Form.Item>
           <Form.Item name="description" label="Description" rules={[{ required: true }]}>
-            <Input.TextArea rows={3} placeholder="Detailed description, observed symptoms, affected process..." />
+            <Input.TextArea
+              rows={3}
+              placeholder="Detailed description, observed symptoms, affected process..."
+            />
           </Form.Item>
           <Form.Item name="severity" label="Severity" rules={[{ required: true }]}>
             <Select placeholder="Select severity">
@@ -155,7 +187,9 @@ export default function Issues() {
               placeholder="Select batch (optional)"
               allowClear
               showSearch
-              filterOption={(input, opt) => (opt?.label as string || '').toLowerCase().includes(input.toLowerCase())}
+              filterOption={(input, opt) =>
+                ((opt?.label as string) || '').toLowerCase().includes(input.toLowerCase())
+              }
               options={batches.map((b) => ({
                 value: b.id,
                 label: `${b.batchNumber} — ${b.productName}`,

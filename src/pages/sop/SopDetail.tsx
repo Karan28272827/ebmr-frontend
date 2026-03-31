@@ -1,9 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Tabs, Tag, Button, Space, Typography, Spin, Collapse, Table, Badge, message, Descriptions, Select, Input,
+  Card,
+  Tabs,
+  Tag,
+  Button,
+  Space,
+  Typography,
+  Spin,
+  Collapse,
+  Table,
+  Badge,
+  message,
+  Descriptions,
+  Select,
+  Input,
 } from 'antd';
 import {
-  CheckCircleOutlined, StopOutlined, SendOutlined, ArrowLeftOutlined,
+  CheckCircleOutlined,
+  StopOutlined,
+  SendOutlined,
+  ArrowLeftOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -103,9 +119,27 @@ export default function SopDetail() {
     { title: 'Code', dataIndex: 'param_code', key: 'param_code', width: 120 },
     { title: 'Parameter', dataIndex: 'name', key: 'name' },
     { title: 'Unit', dataIndex: 'unit', key: 'unit', width: 80 },
-    { title: 'Min', dataIndex: 'min_value', key: 'min_value', width: 80, render: (v: any) => v ?? '—' },
-    { title: 'Target', dataIndex: 'target_value', key: 'target_value', width: 80, render: (v: any) => v ?? '—' },
-    { title: 'Max', dataIndex: 'max_value', key: 'max_value', width: 80, render: (v: any) => v ?? '—' },
+    {
+      title: 'Min',
+      dataIndex: 'min_value',
+      key: 'min_value',
+      width: 80,
+      render: (v: any) => v ?? '—',
+    },
+    {
+      title: 'Target',
+      dataIndex: 'target_value',
+      key: 'target_value',
+      width: 80,
+      render: (v: any) => v ?? '—',
+    },
+    {
+      title: 'Max',
+      dataIndex: 'max_value',
+      key: 'max_value',
+      width: 80,
+      render: (v: any) => v ?? '—',
+    },
     {
       title: 'Mandatory',
       dataIndex: 'is_mandatory',
@@ -126,7 +160,9 @@ export default function SopDetail() {
             key: sec.id,
             label: (
               <Space>
-                <Typography.Text strong>{sec.section_number}. {sec.title}</Typography.Text>
+                <Typography.Text strong>
+                  {sec.section_number}. {sec.title}
+                </Typography.Text>
                 {sec.is_critical && <Tag color="red">Critical</Tag>}
               </Space>
             ),
@@ -214,7 +250,9 @@ export default function SopDetail() {
             </Typography.Text>
             <Typography.Text>{sop.title}</Typography.Text>
             <Tag>{sop.version}</Tag>
-            <Tag color={STATUS_COLOR[sop.status] || 'default'}>{sop.status?.replace(/_/g, ' ')}</Tag>
+            <Tag color={STATUS_COLOR[sop.status] || 'default'}>
+              {sop.status?.replace(/_/g, ' ')}
+            </Tag>
             <Tag>{sop.product_category}</Tag>
           </Space>
         }
@@ -263,9 +301,7 @@ export default function SopDetail() {
           <Descriptions.Item label="Approved At">
             {sop.approved_at ? dayjs(sop.approved_at).format('YYYY-MM-DD HH:mm') : '—'}
           </Descriptions.Item>
-          <Descriptions.Item label="Approved By">
-            {sop.approved_by?.name || '—'}
-          </Descriptions.Item>
+          <Descriptions.Item label="Approved By">{sop.approved_by?.name || '—'}</Descriptions.Item>
           <Descriptions.Item label="Created">
             {sop.created_at ? dayjs(sop.created_at).format('YYYY-MM-DD') : '—'}
           </Descriptions.Item>
@@ -279,9 +315,16 @@ export default function SopDetail() {
       <ESignatureModal
         open={eSignOpen}
         title="Approve SOP"
-        meanings={['I approve this SOP', 'I certify this SOP is compliant', 'I confirm this SOP is ready for production']}
+        meanings={[
+          'I approve this SOP',
+          'I certify this SOP is compliant',
+          'I confirm this SOP is ready for production',
+        ]}
         onConfirm={handleESign}
-        onCancel={() => { setESignOpen(false); setPendingStatus(''); }}
+        onCancel={() => {
+          setESignOpen(false);
+          setPendingStatus('');
+        }}
         loading={eSignLoading}
       />
     </div>

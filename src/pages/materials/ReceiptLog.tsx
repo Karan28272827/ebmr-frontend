@@ -1,7 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Space, Select, Modal, Form, Input, InputNumber,
-  DatePicker, Row, Col, Spin, Typography, message, Grid,
+  Card,
+  Table,
+  Tag,
+  Button,
+  Space,
+  Select,
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  DatePicker,
+  Row,
+  Col,
+  Spin,
+  Typography,
+  message,
+  Grid,
 } from 'antd';
 import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -93,7 +108,9 @@ export default function ReceiptLog() {
         supplier_batch_no: values.supplier_batch_no,
         received_qty: values.received_qty,
         unit: values.unit,
-        manufacture_date: values.manufacture_date ? values.manufacture_date.toISOString() : undefined,
+        manufacture_date: values.manufacture_date
+          ? values.manufacture_date.toISOString()
+          : undefined,
         expiry_date: values.expiry_date ? values.expiry_date.toISOString() : undefined,
         coa_reference: values.coa_reference || undefined,
       };
@@ -114,7 +131,11 @@ export default function ReceiptLog() {
       dataIndex: 'receipt_code',
       key: 'receipt_code',
       render: (code: string, row: any) => (
-        <Button type="link" onClick={() => navigate(`/materials/receipts/${row.id}`)} style={{ padding: 0 }}>
+        <Button
+          type="link"
+          onClick={() => navigate(`/materials/receipts/${row.id}`)}
+          style={{ padding: 0 }}
+        >
           {code}
         </Button>
       ),
@@ -138,24 +159,29 @@ export default function ReceiptLog() {
       title: 'Received At',
       dataIndex: 'received_at',
       key: 'received_at',
-      render: (d: string) => d ? dayjs(d).format('DD MMM YYYY HH:mm') : '-',
+      render: (d: string) => (d ? dayjs(d).format('DD MMM YYYY HH:mm') : '-'),
     },
     {
       title: 'Expiry Date',
       dataIndex: 'expiry_date',
       key: 'expiry_date',
-      render: (d: string) => d ? (
-        <Space direction="vertical" size={2}>
-          <Text style={{ fontSize: 12 }}>{dayjs(d).format('DD MMM YYYY')}</Text>
-          {expiryBadge(d)}
-        </Space>
-      ) : '-',
+      render: (d: string) =>
+        d ? (
+          <Space direction="vertical" size={2}>
+            <Text style={{ fontSize: 12 }}>{dayjs(d).format('DD MMM YYYY')}</Text>
+            {expiryBadge(d)}
+          </Space>
+        ) : (
+          '-'
+        ),
     },
     {
       title: 'QC Status',
       dataIndex: 'qc_status',
       key: 'qc_status',
-      render: (s: string) => <Tag color={QC_STATUS_COLOR[s] || 'default'}>{s?.replace(/_/g, ' ')}</Tag>,
+      render: (s: string) => (
+        <Tag color={QC_STATUS_COLOR[s] || 'default'}>{s?.replace(/_/g, ' ')}</Tag>
+      ),
     },
     {
       title: 'Actions',
@@ -173,14 +199,16 @@ export default function ReceiptLog() {
   ];
 
   const mobileColumns = columns.filter((c) =>
-    ['receipt_code', 'expiry_date', 'qc_status', 'actions'].includes(c.key as string)
+    ['receipt_code', 'expiry_date', 'qc_status', 'actions'].includes(c.key as string),
   );
 
   return (
     <div style={{ padding: screens.md ? 24 : 12 }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col>
-          <Title level={3} style={{ margin: 0 }}>Material Receipt Log</Title>
+          <Title level={3} style={{ margin: 0 }}>
+            Material Receipt Log
+          </Title>
         </Col>
         <Col>
           <Button type="primary" icon={<PlusOutlined />} onClick={openModal}>
@@ -262,17 +290,23 @@ export default function ReceiptLog() {
                   <Col span={12}>
                     <Text type="secondary">Qty:</Text>
                     <br />
-                    <Text>{r.received_qty} {r.unit}</Text>
+                    <Text>
+                      {r.received_qty} {r.unit}
+                    </Text>
                   </Col>
                   <Col span={12}>
                     <Text type="secondary">Expiry:</Text>
                     <br />
                     {r.expiry_date ? (
                       <Space direction="vertical" size={2}>
-                        <Text style={{ fontSize: 12 }}>{dayjs(r.expiry_date).format('DD MMM YYYY')}</Text>
+                        <Text style={{ fontSize: 12 }}>
+                          {dayjs(r.expiry_date).format('DD MMM YYYY')}
+                        </Text>
                         {expiryBadge(r.expiry_date)}
                       </Space>
-                    ) : '-'}
+                    ) : (
+                      '-'
+                    )}
                   </Col>
                 </Row>
               </Card>
@@ -320,10 +354,17 @@ export default function ReceiptLog() {
           </Form.Item>
 
           {selectedPo && (
-            <Card size="small" style={{ marginBottom: 16, background: '#f6ffed', borderColor: '#b7eb8f' }}>
-              <Text strong>Material: </Text><Text>{selectedPo.material_name}</Text>
+            <Card
+              size="small"
+              style={{ marginBottom: 16, background: '#f6ffed', borderColor: '#b7eb8f' }}
+            >
+              <Text strong>Material: </Text>
+              <Text>{selectedPo.material_name}</Text>
               <br />
-              <Text strong>Ordered Qty: </Text><Text>{selectedPo.quantity} {selectedPo.unit}</Text>
+              <Text strong>Ordered Qty: </Text>
+              <Text>
+                {selectedPo.quantity} {selectedPo.unit}
+              </Text>
             </Card>
           )}
 
@@ -364,7 +405,9 @@ export default function ReceiptLog() {
                 label={
                   <span>
                     Expiry Date{' '}
-                    <Tag color="error" style={{ marginLeft: 4 }}>REQUIRED</Tag>
+                    <Tag color="error" style={{ marginLeft: 4 }}>
+                      REQUIRED
+                    </Tag>
                   </span>
                 }
                 name="expiry_date"

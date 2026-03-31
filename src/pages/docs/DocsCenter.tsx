@@ -1,9 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Tabs, Table, Tag, Button, Typography, Spin, Space, message, Grid, Row, Col,
+  Card,
+  Tabs,
+  Table,
+  Tag,
+  Button,
+  Typography,
+  Spin,
+  Space,
+  message,
+  Grid,
+  Row,
+  Col,
 } from 'antd';
 import {
-  PlusOutlined, EyeOutlined, ArrowRightOutlined, FileTextOutlined, CheckSquareOutlined, BookOutlined,
+  PlusOutlined,
+  EyeOutlined,
+  ArrowRightOutlined,
+  FileTextOutlined,
+  CheckSquareOutlined,
+  BookOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -43,7 +59,10 @@ export default function DocsCenter() {
     authApi
       .get('/process-flow')
       .then((r) => setProcessFlows(Array.isArray(r.data) ? r.data : r.data.flows || []))
-      .catch(() => { message.error('Failed to load process flows'); setProcessFlows([]); })
+      .catch(() => {
+        message.error('Failed to load process flows');
+        setProcessFlows([]);
+      })
       .finally(() => setFlowsLoading(false));
   }, []);
 
@@ -53,7 +72,11 @@ export default function DocsCenter() {
       dataIndex: 'flow_code',
       key: 'flow_code',
       render: (v: string, r: any) => (
-        <Button type="link" onClick={() => navigate(`/docs/process-flow/${r.id}`)} style={{ padding: 0 }}>
+        <Button
+          type="link"
+          onClick={() => navigate(`/docs/process-flow/${r.id}`)}
+          style={{ padding: 0 }}
+        >
           {v}
         </Button>
       ),
@@ -65,7 +88,9 @@ export default function DocsCenter() {
       dataIndex: 'status',
       key: 'status',
       width: 140,
-      render: (v: string) => <Tag color={STATUS_COLOR[v] || 'default'}>{(v || '').replace(/_/g, ' ')}</Tag>,
+      render: (v: string) => (
+        <Tag color={STATUS_COLOR[v] || 'default'}>{(v || '').replace(/_/g, ' ')}</Tag>
+      ),
     },
     {
       title: 'Stages',
@@ -85,7 +110,11 @@ export default function DocsCenter() {
       key: 'actions',
       width: 90,
       render: (_: any, r: any) => (
-        <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/docs/process-flow/${r.id}`)}>
+        <Button
+          size="small"
+          icon={<EyeOutlined />}
+          onClick={() => navigate(`/docs/process-flow/${r.id}`)}
+        >
           View
         </Button>
       ),
@@ -153,7 +182,9 @@ export default function DocsCenter() {
                     <Typography.Text strong>{f.flow_code}</Typography.Text> — {f.product_name}
                     <br />
                     <Space size={4} wrap style={{ marginTop: 4 }}>
-                      <Tag color={STATUS_COLOR[f.status] || 'default'}>{(f.status || '').replace(/_/g, ' ')}</Tag>
+                      <Tag color={STATUS_COLOR[f.status] || 'default'}>
+                        {(f.status || '').replace(/_/g, ' ')}
+                      </Tag>
                       <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                         v{f.version} | {f.stages?.length ?? f.stage_count ?? 0} stages
                       </Typography.Text>

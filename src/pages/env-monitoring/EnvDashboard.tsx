@@ -1,5 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Table, Tag, Button, Modal, Form, Input, Select, InputNumber, Space, Typography, Statistic, message, Tabs } from 'antd';
+import {
+  Card,
+  Row,
+  Col,
+  Table,
+  Tag,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Select,
+  InputNumber,
+  Space,
+  Typography,
+  Statistic,
+  message,
+  Tabs,
+} from 'antd';
 import { PlusOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { authApi } from '../../api/axios';
 import dayjs from 'dayjs';
@@ -28,7 +45,9 @@ export default function EnvDashboard() {
       ]);
       setDashboard(dashRes.data);
       setAreas(areasRes.data);
-    } catch { message.error('Failed to load environmental monitoring data'); }
+    } catch {
+      message.error('Failed to load environmental monitoring data');
+    }
     setLoadingDash(false);
   };
 
@@ -40,12 +59,18 @@ export default function EnvDashboard() {
       params.set('days', '30');
       const res = await authApi.get(`/env-monitoring/readings?${params}`);
       setReadings(res.data);
-    } catch { message.error('Failed to load readings'); }
+    } catch {
+      message.error('Failed to load readings');
+    }
     setLoadingReadings(false);
   };
 
-  useEffect(() => { fetchDashboard(); }, []);
-  useEffect(() => { fetchReadings(); }, [areaFilter]);
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+  useEffect(() => {
+    fetchReadings();
+  }, [areaFilter]);
 
   const handleCreateArea = async (vals: any) => {
     setSubmitting(true);
@@ -55,7 +80,9 @@ export default function EnvDashboard() {
       setAreaModal(false);
       areaForm.resetFields();
       fetchDashboard();
-    } catch { message.error('Failed to create area'); }
+    } catch {
+      message.error('Failed to create area');
+    }
     setSubmitting(false);
   };
 
@@ -68,7 +95,9 @@ export default function EnvDashboard() {
       readingForm.resetFields();
       fetchReadings();
       fetchDashboard();
-    } catch { message.error('Failed to record reading'); }
+    } catch {
+      message.error('Failed to record reading');
+    }
     setSubmitting(false);
   };
 
@@ -76,20 +105,37 @@ export default function EnvDashboard() {
     { title: 'Area Name', dataIndex: 'area_name', key: 'area_name' },
     { title: 'Room Class', dataIndex: 'room_class', key: 'room_class' },
     { title: 'Location', dataIndex: 'location', key: 'location', ellipsis: true },
-    { title: 'Status', dataIndex: 'is_active', key: 'is_active', render: (v: boolean) => <Tag color={v ? 'green' : 'red'}>{v ? 'Active' : 'Inactive'}</Tag> },
+    {
+      title: 'Status',
+      dataIndex: 'is_active',
+      key: 'is_active',
+      render: (v: boolean) => <Tag color={v ? 'green' : 'red'}>{v ? 'Active' : 'Inactive'}</Tag>,
+    },
   ];
 
   const readingColumns = [
     { title: 'Area', key: 'area', render: (_: any, r: any) => r.area?.area_name || '—' },
     { title: 'Type', dataIndex: 'reading_type', key: 'reading_type' },
     { title: 'Value', key: 'value', render: (_: any, r: any) => `${r.value} ${r.unit || ''}` },
-    { title: 'Result', dataIndex: 'result', key: 'result', render: (v: string) => <Tag color={READING_COLOR[v] || 'default'}>{v}</Tag> },
-    { title: 'Recorded At', dataIndex: 'recorded_at', key: 'recorded_at', render: (v: string) => dayjs(v).format('DD MMM YYYY HH:mm') },
+    {
+      title: 'Result',
+      dataIndex: 'result',
+      key: 'result',
+      render: (v: string) => <Tag color={READING_COLOR[v] || 'default'}>{v}</Tag>,
+    },
+    {
+      title: 'Recorded At',
+      dataIndex: 'recorded_at',
+      key: 'recorded_at',
+      render: (v: string) => dayjs(v).format('DD MMM YYYY HH:mm'),
+    },
   ];
 
   return (
     <div>
-      <Typography.Title level={4}><EnvironmentOutlined /> Environmental Monitoring</Typography.Title>
+      <Typography.Title level={4}>
+        <EnvironmentOutlined /> Environmental Monitoring
+      </Typography.Title>
 
       <Row gutter={16} style={{ marginBottom: 16 }}>
         {[
@@ -97,9 +143,11 @@ export default function EnvDashboard() {
           { label: 'Readings (30d)', value: dashboard.readings_30d || 0, color: '#52c41a' },
           { label: 'Failures (30d)', value: dashboard.failures_30d || 0, color: '#ff4d4f' },
           { label: 'Warnings (30d)', value: dashboard.warnings_30d || 0, color: '#fa8c16' },
-        ].map(s => (
+        ].map((s) => (
           <Col key={s.label} xs={12} sm={6}>
-            <Card size="small"><Statistic title={s.label} value={s.value} valueStyle={{ color: s.color }} /></Card>
+            <Card size="small">
+              <Statistic title={s.label} value={s.value} valueStyle={{ color: s.color }} />
+            </Card>
           </Col>
         ))}
       </Row>
@@ -117,11 +165,23 @@ export default function EnvDashboard() {
                     placeholder="Filter by area"
                     style={{ width: 200 }}
                     onChange={setAreaFilter}
-                    options={areas.map(a => ({ value: a.id, label: a.area_name }))}
+                    options={areas.map((a) => ({ value: a.id, label: a.area_name }))}
                   />
-                  <Button type="primary" icon={<PlusOutlined />} onClick={() => setReadingModal(true)}>Record Reading</Button>
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setReadingModal(true)}
+                  >
+                    Record Reading
+                  </Button>
                 </Space>
-                <Table dataSource={readings} columns={readingColumns} rowKey="id" loading={loadingReadings} size="small" />
+                <Table
+                  dataSource={readings}
+                  columns={readingColumns}
+                  rowKey="id"
+                  loading={loadingReadings}
+                  size="small"
+                />
               </Card>
             ),
           },
@@ -129,21 +189,41 @@ export default function EnvDashboard() {
             key: 'areas',
             label: 'Monitoring Areas',
             children: (
-              <Card extra={<Button icon={<PlusOutlined />} size="small" onClick={() => setAreaModal(true)}>Add Area</Button>}>
-                <Table dataSource={areas} columns={areaColumns} rowKey="id" loading={loadingDash} size="small" />
+              <Card
+                extra={
+                  <Button icon={<PlusOutlined />} size="small" onClick={() => setAreaModal(true)}>
+                    Add Area
+                  </Button>
+                }
+              >
+                <Table
+                  dataSource={areas}
+                  columns={areaColumns}
+                  rowKey="id"
+                  loading={loadingDash}
+                  size="small"
+                />
               </Card>
             ),
           },
         ]}
       />
 
-      <Modal title="Add Monitoring Area" open={areaModal} onCancel={() => setAreaModal(false)} onOk={() => areaForm.submit()} confirmLoading={submitting}>
+      <Modal
+        title="Add Monitoring Area"
+        open={areaModal}
+        onCancel={() => setAreaModal(false)}
+        onOk={() => areaForm.submit()}
+        confirmLoading={submitting}
+      >
         <Form form={areaForm} layout="vertical" onFinish={handleCreateArea}>
           <Form.Item name="area_name" label="Area Name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           <Form.Item name="room_class" label="Room Class" rules={[{ required: true }]}>
-            <Select options={['A', 'B', 'C', 'D'].map(c => ({ value: c, label: `Class ${c}` }))} />
+            <Select
+              options={['A', 'B', 'C', 'D'].map((c) => ({ value: c, label: `Class ${c}` }))}
+            />
           </Form.Item>
           <Form.Item name="location" label="Location">
             <Input />
@@ -151,13 +231,27 @@ export default function EnvDashboard() {
         </Form>
       </Modal>
 
-      <Modal title="Record Environmental Reading" open={readingModal} onCancel={() => setReadingModal(false)} onOk={() => readingForm.submit()} confirmLoading={submitting}>
+      <Modal
+        title="Record Environmental Reading"
+        open={readingModal}
+        onCancel={() => setReadingModal(false)}
+        onOk={() => readingForm.submit()}
+        confirmLoading={submitting}
+      >
         <Form form={readingForm} layout="vertical" onFinish={handleRecordReading}>
           <Form.Item name="area_id" label="Area" rules={[{ required: true }]}>
-            <Select options={areas.map(a => ({ value: a.id, label: a.area_name }))} />
+            <Select options={areas.map((a) => ({ value: a.id, label: a.area_name }))} />
           </Form.Item>
           <Form.Item name="reading_type" label="Reading Type" rules={[{ required: true }]}>
-            <Select options={['TEMPERATURE', 'HUMIDITY', 'PARTICLE_COUNT', 'PRESSURE_DIFFERENTIAL', 'MICROBIAL'].map(s => ({ value: s, label: s.replace(/_/g, ' ') }))} />
+            <Select
+              options={[
+                'TEMPERATURE',
+                'HUMIDITY',
+                'PARTICLE_COUNT',
+                'PRESSURE_DIFFERENTIAL',
+                'MICROBIAL',
+              ].map((s) => ({ value: s, label: s.replace(/_/g, ' ') }))}
+            />
           </Form.Item>
           <Space>
             <Form.Item name="value" label="Value" rules={[{ required: true }]}>

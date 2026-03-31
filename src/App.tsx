@@ -69,88 +69,88 @@ export default function App() {
 
   return (
     <>
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route
-        path="/"
-        element={
-          <PrivateRoute>
-            <AppLayout />
-          </PrivateRoute>
-        }
-      >
-        <Route index element={<Navigate to="/dashboard" replace />} />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <AppLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<Navigate to="/dashboard" replace />} />
 
-        {/* Existing routes */}
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="batches/new" element={<BatchNew />} />
-        <Route path="batches/:id" element={<BatchDetail />} />
-        <Route path="batches/:id/audit" element={<BatchAudit />} />
-        <Route path="deviations" element={<Deviations />} />
-        <Route path="deviations/:id" element={<DeviationDetail />} />
-        <Route path="issues" element={<Issues />} />
-        <Route path="issues/:id" element={<IssueDetail />} />
-        <Route path="bom-legacy" element={<BomDefinition />} />
+          {/* Existing routes */}
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="batches/new" element={<BatchNew />} />
+          <Route path="batches/:id" element={<BatchDetail />} />
+          <Route path="batches/:id/audit" element={<BatchAudit />} />
+          <Route path="deviations" element={<Deviations />} />
+          <Route path="deviations/:id" element={<DeviationDetail />} />
+          <Route path="issues" element={<Issues />} />
+          <Route path="issues/:id" element={<IssueDetail />} />
+          <Route path="bom-legacy" element={<BomDefinition />} />
 
-        {/* SOP Module */}
-        <Route path="sop" element={<SopList />} />
-        <Route path="sop/new" element={<SopNew />} />
-        <Route path="sop/:id" element={<SopDetail />} />
+          {/* SOP Module */}
+          <Route path="sop" element={<SopList />} />
+          <Route path="sop/new" element={<SopNew />} />
+          <Route path="sop/:id" element={<SopDetail />} />
 
-        {/* QC Module */}
-        <Route path="qc" element={<QcDashboard />} />
-        <Route path="qc/tests" element={<QcTestsList />} />
-        <Route path="qc/tests/:id" element={<QcTestDetail />} />
-        <Route path="qc-specs" element={<QcSpecList />} />
-        <Route path="qc-specs/:id" element={<QcSpecDetail />} />
-        <Route path="env-monitoring" element={<EnvDashboard />} />
+          {/* QC Module */}
+          <Route path="qc" element={<QcDashboard />} />
+          <Route path="qc/tests" element={<QcTestsList />} />
+          <Route path="qc/tests/:id" element={<QcTestDetail />} />
+          <Route path="qc-specs" element={<QcSpecList />} />
+          <Route path="qc-specs/:id" element={<QcSpecDetail />} />
+          <Route path="env-monitoring" element={<EnvDashboard />} />
 
-        {/* Materials Module */}
-        <Route path="materials" element={<MaterialDashboard />} />
-        <Route path="materials/intent" element={<IntentList />} />
-        <Route path="materials/po" element={<PoTracker />} />
-        <Route path="materials/receipts" element={<ReceiptLog />} />
-        <Route path="materials/receipts/:id" element={<ReceiptDetail />} />
+          {/* Materials Module */}
+          <Route path="materials" element={<MaterialDashboard />} />
+          <Route path="materials/intent" element={<IntentList />} />
+          <Route path="materials/po" element={<PoTracker />} />
+          <Route path="materials/receipts" element={<ReceiptLog />} />
+          <Route path="materials/receipts/:id" element={<ReceiptDetail />} />
 
-        {/* Vendors + Stock */}
-        <Route path="vendors" element={<VendorList />} />
-        <Route path="vendors/:id" element={<VendorDetail />} />
-        <Route path="stock" element={<StockDashboard />} />
-        <Route path="stock/ledger" element={<StockLedger />} />
+          {/* Vendors + Stock */}
+          <Route path="vendors" element={<VendorList />} />
+          <Route path="vendors/:id" element={<VendorDetail />} />
+          <Route path="stock" element={<StockDashboard />} />
+          <Route path="stock/ledger" element={<StockLedger />} />
 
-        {/* BOM Module */}
-        <Route path="bom" element={<BomList />} />
-        <Route path="bom/:id" element={<BomDetail />} />
+          {/* BOM Module */}
+          <Route path="bom" element={<BomList />} />
+          <Route path="bom/:id" element={<BomDetail />} />
 
-        {/* Planning Module */}
-        <Route path="planning" element={<PlanningDashboard />} />
-        <Route path="planning/plans" element={<PlanList />} />
-        <Route path="planning/new" element={<PlanNew />} />
-        <Route path="planning/:id" element={<PlanDetail />} />
+          {/* Planning Module */}
+          <Route path="planning" element={<PlanningDashboard />} />
+          <Route path="planning/plans" element={<PlanList />} />
+          <Route path="planning/new" element={<PlanNew />} />
+          <Route path="planning/:id" element={<PlanDetail />} />
 
-        {/* CAPA Module */}
-        <Route path="capa" element={<CapaList />} />
-        <Route path="capa/:id" element={<CapaDetail />} />
+          {/* CAPA Module */}
+          <Route path="capa" element={<CapaList />} />
+          <Route path="capa/:id" element={<CapaDetail />} />
 
-        {/* QC + Retention + CoA */}
-        <Route path="retention" element={<RetentionList />} />
-        <Route path="coa" element={<CoaList />} />
+          {/* QC + Retention + CoA */}
+          <Route path="retention" element={<RetentionList />} />
+          <Route path="coa" element={<CoaList />} />
 
-        {/* Documentation Module */}
-        <Route path="docs" element={<DocsCenter />} />
-        <Route path="docs/process-flow/new" element={<ProcessFlowNew />} />
-        <Route path="docs/process-flow/:id" element={<ProcessFlowDetail />} />
+          {/* Documentation Module */}
+          <Route path="docs" element={<DocsCenter />} />
+          <Route path="docs/process-flow/new" element={<ProcessFlowNew />} />
+          <Route path="docs/process-flow/:id" element={<ProcessFlowDetail />} />
 
-        {/* Admin Module */}
-        <Route path="admin/users" element={<UserList />} />
-        <Route path="admin/users/:id" element={<UserDetail />} />
-      </Route>
-    </Routes>
+          {/* Admin Module */}
+          <Route path="admin/users" element={<UserList />} />
+          <Route path="admin/users/:id" element={<UserDetail />} />
+        </Route>
+      </Routes>
 
-    {/* Chatbot — lazy-loaded, isolated, outside router — never interferes with any route */}
-    <Suspense fallback={null}>
-      <ChatbotWidget />
-    </Suspense>
+      {/* Chatbot — lazy-loaded, isolated, outside router — never interferes with any route */}
+      <Suspense fallback={null}>
+        <ChatbotWidget />
+      </Suspense>
     </>
   );
 }

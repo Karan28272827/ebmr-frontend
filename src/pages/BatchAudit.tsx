@@ -25,7 +25,10 @@ export default function BatchAudit() {
   const [filterType, setFilterType] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    authApi.get(`/audit-trail/${id}`).then((r) => { setLogs(r.data); setLoading(false); });
+    authApi.get(`/audit-trail/${id}`).then((r) => {
+      setLogs(r.data);
+      setLoading(false);
+    });
   }, [id]);
 
   const eventTypes = [...new Set(logs.map((l) => l.eventType))];
@@ -33,9 +36,28 @@ export default function BatchAudit() {
 
   const columns = [
     { title: '#', key: 'idx', render: (_: any, __: any, i: number) => i + 1, width: 50 },
-    { title: 'Timestamp', dataIndex: 'timestamp', key: 'timestamp', render: (v: string) => dayjs(v).format('YYYY-MM-DD HH:mm:ss'), width: 170 },
-    { title: 'Event', dataIndex: 'eventType', key: 'eventType', render: (v: string) => <Tag color={EVENT_COLOR[v] || 'default'}>{v.replace(/_/g, ' ')}</Tag> },
-    { title: 'Actor', key: 'actor', render: (_: any, r: any) => <span>{r.actor?.name} <Tag>{r.actorRole}</Tag></span> },
+    {
+      title: 'Timestamp',
+      dataIndex: 'timestamp',
+      key: 'timestamp',
+      render: (v: string) => dayjs(v).format('YYYY-MM-DD HH:mm:ss'),
+      width: 170,
+    },
+    {
+      title: 'Event',
+      dataIndex: 'eventType',
+      key: 'eventType',
+      render: (v: string) => <Tag color={EVENT_COLOR[v] || 'default'}>{v.replace(/_/g, ' ')}</Tag>,
+    },
+    {
+      title: 'Actor',
+      key: 'actor',
+      render: (_: any, r: any) => (
+        <span>
+          {r.actor?.name} <Tag>{r.actorRole}</Tag>
+        </span>
+      ),
+    },
     {
       title: 'Before → After',
       key: 'states',
@@ -59,7 +81,9 @@ export default function BatchAudit() {
   return (
     <div>
       <Space style={{ marginBottom: 16 }}>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(`/batches/${id}`)}>Back to Batch</Button>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(`/batches/${id}`)}>
+          Back to Batch
+        </Button>
       </Space>
       <Card
         title={<Typography.Text strong>Audit Trail</Typography.Text>}
@@ -71,7 +95,11 @@ export default function BatchAudit() {
             value={filterType}
             onChange={setFilterType}
           >
-            {eventTypes.map((t) => <Select.Option key={t} value={t}>{t.replace(/_/g, ' ')}</Select.Option>)}
+            {eventTypes.map((t) => (
+              <Select.Option key={t} value={t}>
+                {t.replace(/_/g, ' ')}
+              </Select.Option>
+            ))}
           </Select>
         }
       >

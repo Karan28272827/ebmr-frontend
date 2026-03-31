@@ -1,11 +1,32 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-  Table, Tag, Button, Space, Card, Typography, Modal, Form, Input, Select,
-  message, Spin, Result, Popconfirm, Tooltip, Row, Col,
+  Table,
+  Tag,
+  Button,
+  Space,
+  Card,
+  Typography,
+  Modal,
+  Form,
+  Input,
+  Select,
+  message,
+  Spin,
+  Result,
+  Popconfirm,
+  Tooltip,
+  Row,
+  Col,
 } from 'antd';
 import {
-  PlusOutlined, EditOutlined, LockOutlined, UnlockOutlined, UserOutlined,
-  KeyOutlined, StopOutlined, CheckOutlined,
+  PlusOutlined,
+  EditOutlined,
+  LockOutlined,
+  UnlockOutlined,
+  UserOutlined,
+  KeyOutlined,
+  StopOutlined,
+  CheckOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { Grid } from 'antd';
@@ -67,18 +88,6 @@ export default function UserList() {
 
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
-  // Access guard
-  if (currentUser?.role !== 'SYSTEM_ADMIN') {
-    return (
-      <Result
-        status="403"
-        title="Access Denied"
-        subTitle="You do not have permission to access user management."
-        extra={<Button type="primary" onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>}
-      />
-    );
-  }
-
   const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
@@ -91,7 +100,25 @@ export default function UserList() {
     }
   }, []);
 
-  useEffect(() => { loadUsers(); }, [loadUsers]);
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
+
+  // Access guard
+  if (currentUser?.role !== 'SYSTEM_ADMIN') {
+    return (
+      <Result
+        status="403"
+        title="Access Denied"
+        subTitle="You do not have permission to access user management."
+        extra={
+          <Button type="primary" onClick={() => navigate('/dashboard')}>
+            Back to Dashboard
+          </Button>
+        }
+      />
+    );
+  }
 
   const handleCreate = async () => {
     try {
@@ -197,8 +224,7 @@ export default function UserList() {
     return { label: expiryDate.format('YYYY-MM-DD'), warning: false };
   };
 
-  const isLocked = (u: any) =>
-    u.locked_until && dayjs(u.locked_until).isAfter(dayjs());
+  const isLocked = (u: any) => u.locked_until && dayjs(u.locked_until).isAfter(dayjs());
 
   const columns = [
     {
@@ -207,7 +233,9 @@ export default function UserList() {
       render: (_: any, r: any) => (
         <Space direction="vertical" size={0}>
           <Typography.Text strong>{r.name}</Typography.Text>
-          <Typography.Text type="secondary" style={{ fontSize: 12 }}>{r.email}</Typography.Text>
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            {r.email}
+          </Typography.Text>
         </Space>
       ),
     },
@@ -215,9 +243,7 @@ export default function UserList() {
       title: 'Role',
       dataIndex: 'role',
       key: 'role',
-      render: (v: string) => (
-        <Tag color={ROLE_COLOR[v] || 'default'}>{v?.replace(/_/g, ' ')}</Tag>
-      ),
+      render: (v: string) => <Tag color={ROLE_COLOR[v] || 'default'}>{v?.replace(/_/g, ' ')}</Tag>,
     },
     {
       title: 'Status',
@@ -231,11 +257,14 @@ export default function UserList() {
       title: 'Last Login',
       dataIndex: 'last_login_at',
       key: 'last_login_at',
-      render: (v: string) => v ? (
-        <Tooltip title={dayjs(v).format('YYYY-MM-DD HH:mm:ss')}>
-          <Typography.Text>{dayjs(v).fromNow()}</Typography.Text>
-        </Tooltip>
-      ) : '—',
+      render: (v: string) =>
+        v ? (
+          <Tooltip title={dayjs(v).format('YYYY-MM-DD HH:mm:ss')}>
+            <Typography.Text>{dayjs(v).fromNow()}</Typography.Text>
+          </Tooltip>
+        ) : (
+          '—'
+        ),
     },
     {
       title: 'Password Expiry',
@@ -256,7 +285,9 @@ export default function UserList() {
       render: (_: any, r: any) =>
         isLocked(r) ? (
           <Tooltip title={`Locked until ${dayjs(r.locked_until).format('YYYY-MM-DD HH:mm')}`}>
-            <Tag color="red" icon={<LockOutlined />}>LOCKED</Tag>
+            <Tag color="red" icon={<LockOutlined />}>
+              LOCKED
+            </Tag>
           </Tooltip>
         ) : (
           <Tag color="default">OK</Tag>
@@ -267,11 +298,7 @@ export default function UserList() {
       key: 'actions',
       render: (_: any, r: any) => (
         <Space size="small" wrap>
-          <Button
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() => openEdit(r)}
-          >
+          <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(r)}>
             {screens.lg ? 'Edit' : ''}
           </Button>
           <Popconfirm
@@ -299,11 +326,7 @@ export default function UserList() {
               {screens.lg ? 'Unlock' : ''}
             </Button>
           )}
-          <Button
-            size="small"
-            icon={<KeyOutlined />}
-            onClick={() => openResetPassword(r)}
-          >
+          <Button size="small" icon={<KeyOutlined />} onClick={() => openResetPassword(r)}>
             {screens.lg ? 'Reset Pwd' : ''}
           </Button>
           <Button
@@ -327,7 +350,11 @@ export default function UserList() {
         <Space>
           <Typography.Text strong>{u.name}</Typography.Text>
           <Tag color={u.is_active ? 'success' : 'error'}>{u.is_active ? 'Active' : 'Inactive'}</Tag>
-          {isLocked(u) && <Tag color="red" icon={<LockOutlined />}>LOCKED</Tag>}
+          {isLocked(u) && (
+            <Tag color="red" icon={<LockOutlined />}>
+              LOCKED
+            </Tag>
+          )}
         </Space>
       }
     >
@@ -338,12 +365,29 @@ export default function UserList() {
           Last login: {u.last_login_at ? dayjs(u.last_login_at).fromNow() : '—'}
         </Typography.Text>
         <Space wrap>
-          <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(u)}>Edit</Button>
+          <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(u)}>
+            Edit
+          </Button>
           {isLocked(u) && (
-            <Button size="small" icon={<UnlockOutlined />} onClick={() => handleUnlock(u)} loading={actionLoadingId === u.id}>Unlock</Button>
+            <Button
+              size="small"
+              icon={<UnlockOutlined />}
+              onClick={() => handleUnlock(u)}
+              loading={actionLoadingId === u.id}
+            >
+              Unlock
+            </Button>
           )}
-          <Button size="small" icon={<KeyOutlined />} onClick={() => openResetPassword(u)}>Reset Pwd</Button>
-          <Button size="small" icon={<UserOutlined />} onClick={() => navigate(`/admin/users/${u.id}`)}>Activity</Button>
+          <Button size="small" icon={<KeyOutlined />} onClick={() => openResetPassword(u)}>
+            Reset Pwd
+          </Button>
+          <Button
+            size="small"
+            icon={<UserOutlined />}
+            onClick={() => navigate(`/admin/users/${u.id}`)}
+          >
+            Activity
+          </Button>
         </Space>
       </Space>
     </Card>
@@ -351,13 +395,20 @@ export default function UserList() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
-        <Typography.Title level={4} style={{ margin: 0 }}>User Management</Typography.Title>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => setCreateModalOpen(true)}
-        >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 16,
+          flexWrap: 'wrap',
+          gap: 8,
+        }}
+      >
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          User Management
+        </Typography.Title>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateModalOpen(true)}>
           Create User
         </Button>
       </div>
@@ -379,7 +430,9 @@ export default function UserList() {
       ) : (
         <div>
           {users.length === 0 ? (
-            <Card><Typography.Text type="secondary">No users found</Typography.Text></Card>
+            <Card>
+              <Typography.Text type="secondary">No users found</Typography.Text>
+            </Card>
           ) : (
             users.map(renderMobileCard)
           )}
@@ -391,7 +444,10 @@ export default function UserList() {
         title="Create New User"
         open={createModalOpen}
         onOk={handleCreate}
-        onCancel={() => { setCreateModalOpen(false); createForm.resetFields(); }}
+        onCancel={() => {
+          setCreateModalOpen(false);
+          createForm.resetFields();
+        }}
         confirmLoading={createLoading}
         okText="Create User"
         destroyOnClose
@@ -442,7 +498,11 @@ export default function UserList() {
         title={editUser ? `Edit User: ${editUser.name}` : 'Edit User'}
         open={editModalOpen}
         onOk={handleEdit}
-        onCancel={() => { setEditModalOpen(false); setEditUser(null); editForm.resetFields(); }}
+        onCancel={() => {
+          setEditModalOpen(false);
+          setEditUser(null);
+          editForm.resetFields();
+        }}
         confirmLoading={editLoading}
         okText="Save Changes"
         destroyOnClose
@@ -458,11 +518,7 @@ export default function UserList() {
               options={ALL_ROLES.map((r) => ({ value: r, label: r.replace(/_/g, ' ') }))}
             />
           </Form.Item>
-          <Form.Item
-            name="is_active"
-            label="Account Status"
-            rules={[{ required: true }]}
-          >
+          <Form.Item name="is_active" label="Account Status" rules={[{ required: true }]}>
             <Select
               options={[
                 { value: true, label: 'Active' },
@@ -478,7 +534,11 @@ export default function UserList() {
         title={resetUser ? `Reset Password: ${resetUser.name}` : 'Reset Password'}
         open={resetModalOpen}
         onOk={handleResetPassword}
-        onCancel={() => { setResetModalOpen(false); setResetUser(null); resetForm.resetFields(); }}
+        onCancel={() => {
+          setResetModalOpen(false);
+          setResetUser(null);
+          resetForm.resetFields();
+        }}
         confirmLoading={resetLoading}
         okText="Reset Password"
         destroyOnClose

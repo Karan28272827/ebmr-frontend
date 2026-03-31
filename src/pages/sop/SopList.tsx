@@ -78,11 +78,7 @@ export default function SopList() {
       key: 'actions',
       width: 90,
       render: (_: any, r: any) => (
-        <Button
-          icon={<EyeOutlined />}
-          size="small"
-          onClick={() => navigate(`/sop/${r.id}`)}
-        >
+        <Button icon={<EyeOutlined />} size="small" onClick={() => navigate(`/sop/${r.id}`)}>
           View
         </Button>
       ),
@@ -165,8 +161,10 @@ export default function SopList() {
               >
                 <b>{s.sop_code}</b> — {s.title}
                 <br />
-                <Tag color={STATUS_COLOR[s.status] || 'default'}>{s.status?.replace(/_/g, ' ')}</Tag>
-                {' '}v{s.version} | {s.product_category}
+                <Tag color={STATUS_COLOR[s.status] || 'default'}>
+                  {s.status?.replace(/_/g, ' ')}
+                </Tag>{' '}
+                v{s.version} | {s.product_category}
               </Card>
             </Col>
           ))}

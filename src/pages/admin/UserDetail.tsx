@@ -1,11 +1,28 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Card, Tag, Button, Space, Typography, Descriptions, Form, Input, Select,
-  message, Spin, Alert, Result, Table, Modal,
+  Card,
+  Tag,
+  Button,
+  Space,
+  Typography,
+  Descriptions,
+  Form,
+  Input,
+  Select,
+  message,
+  Spin,
+  Alert,
+  Result,
+  Table,
+  Modal,
 } from 'antd';
 import {
-  ArrowLeftOutlined, LockOutlined, UnlockOutlined, KeyOutlined, EditOutlined,
+  ArrowLeftOutlined,
+  LockOutlined,
+  UnlockOutlined,
+  KeyOutlined,
+  EditOutlined,
   SaveOutlined,
 } from '@ant-design/icons';
 import { Grid } from 'antd';
@@ -72,20 +89,7 @@ export default function UserDetail() {
 
   const [unlockLoading, setUnlockLoading] = useState(false);
 
-  // Access guard
-  if (currentUser?.role !== 'SYSTEM_ADMIN') {
-    return (
-      <Result
-        status="403"
-        title="Access Denied"
-        subTitle="You do not have permission to view user details."
-        extra={<Button type="primary" onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>}
-      />
-    );
-  }
-
-  const isLocked = (u: any) =>
-    u?.locked_until && dayjs(u.locked_until).isAfter(dayjs());
+  const isLocked = (u: any) => u?.locked_until && dayjs(u.locked_until).isAfter(dayjs());
 
   const loadUser = useCallback(async () => {
     setLoading(true);
@@ -120,6 +124,22 @@ export default function UserDetail() {
     loadUser();
     loadActivity();
   }, [loadUser, loadActivity]);
+
+  // Access guard — after hooks to comply with rules of hooks
+  if (currentUser?.role !== 'SYSTEM_ADMIN') {
+    return (
+      <Result
+        status="403"
+        title="Access Denied"
+        subTitle="You do not have permission to view user details."
+        extra={
+          <Button type="primary" onClick={() => navigate('/dashboard')}>
+            Back to Dashboard
+          </Button>
+        }
+      />
+    );
+  }
 
   const handleEdit = async () => {
     try {
@@ -179,7 +199,8 @@ export default function UserDetail() {
       if (obj.role) parts.push(`Role: ${obj.role}`);
       if (obj.ip) parts.push(`IP: ${obj.ip}`);
       if (obj.reason) parts.push(obj.reason);
-      if (obj.lockedUntil) parts.push(`Until: ${dayjs(obj.lockedUntil).format('YYYY-MM-DD HH:mm')}`);
+      if (obj.lockedUntil)
+        parts.push(`Until: ${dayjs(obj.lockedUntil).format('YYYY-MM-DD HH:mm')}`);
       return parts.length > 0 ? parts.join(' · ') : JSON.stringify(obj);
     } catch {
       return String(after);
@@ -204,7 +225,9 @@ export default function UserDetail() {
       render: (v: string) => (
         <Space direction="vertical" size={0}>
           <Typography.Text>{dayjs(v).format('YYYY-MM-DD HH:mm:ss')}</Typography.Text>
-          <Typography.Text type="secondary" style={{ fontSize: 11 }}>{dayjs(v).fromNow()}</Typography.Text>
+          <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+            {dayjs(v).fromNow()}
+          </Typography.Text>
         </Space>
       ),
     },
@@ -232,7 +255,9 @@ export default function UserDetail() {
       <Card
         title={
           <Space>
-            <Typography.Text strong style={{ fontSize: 16 }}>{userRecord.name}</Typography.Text>
+            <Typography.Text strong style={{ fontSize: 16 }}>
+              {userRecord.name}
+            </Typography.Text>
             <Tag color={userRecord.is_active ? 'success' : 'error'}>
               {userRecord.is_active ? 'Active' : 'Inactive'}
             </Tag>
@@ -240,7 +265,9 @@ export default function UserDetail() {
               {userRecord.role?.replace(/_/g, ' ')}
             </Tag>
             {isLocked(userRecord) && (
-              <Tag color="red" icon={<LockOutlined />}>LOCKED</Tag>
+              <Tag color="red" icon={<LockOutlined />}>
+                LOCKED
+              </Tag>
             )}
           </Space>
         }
@@ -352,17 +379,16 @@ export default function UserDetail() {
 
           <Space wrap>
             {isLocked(userRecord) && (
-              <Button
-                icon={<UnlockOutlined />}
-                onClick={handleUnlock}
-                loading={unlockLoading}
-              >
+              <Button icon={<UnlockOutlined />} onClick={handleUnlock} loading={unlockLoading}>
                 Unlock Account
               </Button>
             )}
             <Button
               icon={<KeyOutlined />}
-              onClick={() => { resetForm.resetFields(); setResetModalOpen(true); }}
+              onClick={() => {
+                resetForm.resetFields();
+                setResetModalOpen(true);
+              }}
             >
               Reset Password
             </Button>
@@ -399,7 +425,10 @@ export default function UserDetail() {
         title={`Reset Password: ${userRecord.name}`}
         open={resetModalOpen}
         onOk={handleResetPassword}
-        onCancel={() => { setResetModalOpen(false); resetForm.resetFields(); }}
+        onCancel={() => {
+          setResetModalOpen(false);
+          resetForm.resetFields();
+        }}
         confirmLoading={resetLoading}
         okText="Reset Password"
         destroyOnClose

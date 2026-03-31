@@ -1,10 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Row, Col, Card, Typography, Button, Tag, Spin, Alert, Space, Badge, Statistic, message, Grid, Divider,
+  Row,
+  Col,
+  Card,
+  Typography,
+  Button,
+  Tag,
+  Spin,
+  Alert,
+  Space,
+  Badge,
+  Statistic,
+  message,
+  Grid,
+  Divider,
 } from 'antd';
 import {
-  CalendarOutlined, WarningOutlined, ExclamationCircleOutlined, CheckCircleOutlined,
-  ArrowRightOutlined, PlusOutlined, BellOutlined,
+  CalendarOutlined,
+  WarningOutlined,
+  ExclamationCircleOutlined,
+  CheckCircleOutlined,
+  ArrowRightOutlined,
+  PlusOutlined,
+  BellOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -46,7 +64,11 @@ export default function PlanningDashboard() {
   const [calendarBatches, setCalendarBatches] = useState<any[]>([]);
   const [expiryAlerts, setExpiryAlerts] = useState<any[]>([]);
   const [shortageAlerts, setShortageAlerts] = useState<any[]>([]);
-  const [stats, setStats] = useState({ plansThisMonth: 0, batchesScheduled: 0, batchesInitiated: 0 });
+  const [stats, setStats] = useState({
+    plansThisMonth: 0,
+    batchesScheduled: 0,
+    batchesInitiated: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [acknowledging, setAcknowledging] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -63,7 +85,9 @@ export default function PlanningDashboard() {
 
         if (calRes.status === 'fulfilled') {
           const data = calRes.value.data;
-          setCalendarBatches(Array.isArray(data.batches) ? data.batches : Array.isArray(data) ? data : []);
+          setCalendarBatches(
+            Array.isArray(data.batches) ? data.batches : Array.isArray(data) ? data : [],
+          );
           if (data.stats) setStats(data.stats);
           if (data.shortageAlerts) setShortageAlerts(data.shortageAlerts);
         }
@@ -108,7 +132,14 @@ export default function PlanningDashboard() {
   return (
     <div>
       <div
-        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 16,
+          flexWrap: 'wrap',
+          gap: 8,
+        }}
       >
         <Typography.Title level={4} style={{ margin: 0 }}>
           Production Planning
@@ -156,22 +187,39 @@ export default function PlanningDashboard() {
       <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
         <Col xs={12} sm={6}>
           <Card size="small">
-            <Statistic title="Plans This Month" value={stats.plansThisMonth} prefix={<CalendarOutlined />} />
+            <Statistic
+              title="Plans This Month"
+              value={stats.plansThisMonth}
+              prefix={<CalendarOutlined />}
+            />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
           <Card size="small">
-            <Statistic title="Batches Scheduled" value={stats.batchesScheduled} prefix={<CheckCircleOutlined />} />
+            <Statistic
+              title="Batches Scheduled"
+              value={stats.batchesScheduled}
+              prefix={<CheckCircleOutlined />}
+            />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
           <Card size="small">
-            <Statistic title="Shortage Alerts" value={shortageAlerts.length} valueStyle={{ color: shortageAlerts.length > 0 ? '#cf1322' : undefined }} prefix={<WarningOutlined />} />
+            <Statistic
+              title="Shortage Alerts"
+              value={shortageAlerts.length}
+              valueStyle={{ color: shortageAlerts.length > 0 ? '#cf1322' : undefined }}
+              prefix={<WarningOutlined />}
+            />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
           <Card size="small">
-            <Statistic title="Batches Initiated" value={stats.batchesInitiated} prefix={<BellOutlined />} />
+            <Statistic
+              title="Batches Initiated"
+              value={stats.batchesInitiated}
+              prefix={<BellOutlined />}
+            />
           </Card>
         </Col>
       </Row>
@@ -183,15 +231,25 @@ export default function PlanningDashboard() {
           {/* LEFT: Calendar/List of planned batches */}
           <Col xs={24} lg={16}>
             <Card
-              title={<Space><CalendarOutlined /> Monthly Batch Schedule</Space>}
+              title={
+                <Space>
+                  <CalendarOutlined /> Monthly Batch Schedule
+                </Space>
+              }
               extra={
-                <Button type="link" onClick={() => navigate('/planning/calendar')} icon={<ArrowRightOutlined />}>
+                <Button
+                  type="link"
+                  onClick={() => navigate('/planning/calendar')}
+                  icon={<ArrowRightOutlined />}
+                >
                   View Full Calendar
                 </Button>
               }
             >
               {sortedWeeks.length === 0 ? (
-                <Typography.Text type="secondary">No batches scheduled. Create a plan to get started.</Typography.Text>
+                <Typography.Text type="secondary">
+                  No batches scheduled. Create a plan to get started.
+                </Typography.Text>
               ) : (
                 sortedWeeks.map((weekStart) => {
                   const batches = weekGroups[weekStart];
@@ -199,7 +257,11 @@ export default function PlanningDashboard() {
                   const weekLabel = `Week of ${dayjs(weekStart).format('MMM D')} – ${weekEnd}`;
                   return (
                     <div key={weekStart} style={{ marginBottom: 20 }}>
-                      <Typography.Text type="secondary" strong style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+                      <Typography.Text
+                        type="secondary"
+                        strong
+                        style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}
+                      >
                         {weekLabel}
                       </Typography.Text>
                       <Divider style={{ margin: '6px 0 10px' }} />
@@ -223,10 +285,15 @@ export default function PlanningDashboard() {
                                 </Typography.Text>
                                 <br />
                                 <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                                  {dayjs(batch.planned_start).format('MMM D HH:mm')} → {dayjs(batch.planned_end).format('MMM D HH:mm')}
+                                  {dayjs(batch.planned_start).format('MMM D HH:mm')} →{' '}
+                                  {dayjs(batch.planned_end).format('MMM D HH:mm')}
                                 </Typography.Text>
                               </Col>
-                              <Col xs={24} sm={8} style={{ textAlign: screens.sm ? 'right' : 'left' }}>
+                              <Col
+                                xs={24}
+                                sm={8}
+                                style={{ textAlign: screens.sm ? 'right' : 'left' }}
+                              >
                                 <Tag color={BATCH_STATUS_COLOR[batch.status] || 'default'}>
                                   {(batch.status || 'PLANNED').replace(/_/g, ' ')}
                                 </Tag>
@@ -264,10 +331,14 @@ export default function PlanningDashboard() {
                       <Card
                         key={alert.id}
                         size="small"
-                        style={{ borderLeft: `3px solid ${alert.days_remaining <= 7 ? '#ff4d4f' : '#faad14'}` }}
+                        style={{
+                          borderLeft: `3px solid ${alert.days_remaining <= 7 ? '#ff4d4f' : '#faad14'}`,
+                        }}
                       >
                         <div style={{ marginBottom: 4 }}>
-                          <Typography.Text strong style={{ fontSize: 13 }}>{alert.material_name}</Typography.Text>
+                          <Typography.Text strong style={{ fontSize: 13 }}>
+                            {alert.material_name}
+                          </Typography.Text>
                         </div>
                         <div style={{ marginBottom: 4 }}>
                           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
@@ -279,7 +350,10 @@ export default function PlanningDashboard() {
                             <Typography.Text style={{ fontSize: 12 }}>
                               Expires: {dayjs(alert.expiry_date).format('YYYY-MM-DD')}
                             </Typography.Text>
-                            <Tag color={expiryBadgeColor(alert.days_remaining)} style={{ fontSize: 11 }}>
+                            <Tag
+                              color={expiryBadgeColor(alert.days_remaining)}
+                              style={{ fontSize: 11 }}
+                            >
                               {alert.days_remaining}d left
                             </Tag>
                           </Space>
@@ -303,7 +377,9 @@ export default function PlanningDashboard() {
                   <Space>
                     <ExclamationCircleOutlined style={{ color: '#faad14' }} />
                     Shortage Alerts
-                    {shortageAlerts.length > 0 && <Badge count={shortageAlerts.length} color="orange" />}
+                    {shortageAlerts.length > 0 && (
+                      <Badge count={shortageAlerts.length} color="orange" />
+                    )}
                   </Space>
                 }
                 size="small"
@@ -313,11 +389,18 @@ export default function PlanningDashboard() {
                 ) : (
                   <Space direction="vertical" style={{ width: '100%' }} size={8}>
                     {shortageAlerts.map((alert: any, idx: number) => (
-                      <Card key={alert.id || idx} size="small" style={{ borderLeft: '3px solid #faad14' }}>
-                        <Typography.Text strong style={{ fontSize: 13 }}>{alert.material_name}</Typography.Text>
+                      <Card
+                        key={alert.id || idx}
+                        size="small"
+                        style={{ borderLeft: '3px solid #faad14' }}
+                      >
+                        <Typography.Text strong style={{ fontSize: 13 }}>
+                          {alert.material_name}
+                        </Typography.Text>
                         <br />
                         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                          Required: {alert.required_qty} {alert.unit} | Available: {alert.available_qty} {alert.unit}
+                          Required: {alert.required_qty} {alert.unit} | Available:{' '}
+                          {alert.available_qty} {alert.unit}
                         </Typography.Text>
                         <br />
                         <Tag color="orange" style={{ marginTop: 4, fontSize: 11 }}>
