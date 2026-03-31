@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Layout, Menu, Button, Space, Tag, Typography, message, Drawer, Grid,
+  Badge, Popover, List, Empty,
 } from 'antd';
 import {
   DashboardOutlined,
@@ -19,6 +20,12 @@ import {
   MenuOutlined,
   CheckSquareOutlined,
   ShoppingCartOutlined,
+  BellOutlined,
+  MedicineBoxOutlined,
+  StockOutlined,
+  EnvironmentOutlined,
+  SolutionOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
@@ -39,13 +46,26 @@ const ROLE_COLOR: Record<string, string> = {
   SYSTEM_ADMIN: 'magenta',
 };
 
+const ROLE_LEVEL: Record<string, number> = {
+  BATCH_OPERATOR: 1, SUPERVISOR: 2, LAB_ANALYST: 3,
+  QA_REVIEWER: 4, QA_MANAGER: 5, QUALIFIED_PERSON: 6, SYSTEM_ADMIN: 7,
+};
+
 function getSelectedKey(pathname: string): string {
   if (pathname.startsWith('/sop')) return 'sop';
+  if (pathname.startsWith('/qc-specs')) return 'qc-specs';
+  if (pathname.startsWith('/env-monitoring')) return 'env-monitoring';
   if (pathname.startsWith('/qc')) return 'qc';
   if (pathname.startsWith('/materials')) return 'materials';
+  if (pathname.startsWith('/vendors')) return 'vendors';
+  if (pathname.startsWith('/stock/ledger')) return 'stock-ledger';
+  if (pathname.startsWith('/stock')) return 'stock';
   if (pathname.startsWith('/bom')) return 'bom';
   if (pathname.startsWith('/planning')) return 'planning';
   if (pathname.startsWith('/docs')) return 'docs';
+  if (pathname.startsWith('/capa')) return 'capa';
+  if (pathname.startsWith('/retention')) return 'retention';
+  if (pathname.startsWith('/coa')) return 'coa';
   if (pathname.startsWith('/admin')) return 'admin';
   if (pathname.startsWith('/deviations')) return 'deviations';
   if (pathname.startsWith('/issues')) return 'issues';
@@ -54,9 +74,88 @@ function getSelectedKey(pathname: string): string {
 
 function getOpenKeys(pathname: string): string[] {
   if (pathname.startsWith('/materials')) return ['materials-group'];
-  if (pathname.startsWith('/qc')) return ['qc-group'];
+  if (pathname.startsWith('/qc-specs') || pathname.startsWith('/env-monitoring') || pathname.startsWith('/qc')) return ['qc-group'];
   if (pathname.startsWith('/planning')) return ['planning-group'];
+  if (pathname.startsWith('/vendors') || pathname.startsWith('/stock')) return ['stores-group'];
+  if (pathname.startsWith('/capa') || pathname.startsWith('/retention') || pathname.startsWith('/coa')) return ['compliance-group'];
   return [];
+}
+
+function NotificationBell() {
+  const [count, setCount] = useState(0);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const fetchCount = useCallback(async () => {
+    try {
+      const res = await authApi.get('/notifications/count');
+      setCount(res.data.count || 0);
+    } catch { /* ignore */ }
+  }, []);
+
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await authApi.get('/notifications?unreadOnly=true');
+      setNotifications(res.data.slice(0, 8));
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => {
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => clearInterval(interval);
+  }, [fetchCount]);
+
+  const handleOpen = (v: boolean) => {
+    setOpen(v);
+    if (v) fetchNotifications();
+  };
+
+  const markRead = async (id: string) => {
+    try {
+      await authApi.patch(`/notifications/${id}/read`);
+      setNotifications(prev => prev.filter(n => n.id !== id));
+      setCount(c => Math.max(0, c - 1));
+    } catch { /* ignore */ }
+  };
+
+  const content = (
+    <div style={{ width: 320 }}>
+      {notifications.length === 0 ? (
+        <Empty description="No unread notifications" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+      ) : (
+        <List
+          size="small"
+          dataSource={notifications}
+          renderItem={(n: any) => (
+            <List.Item
+              actions={[<Button type="link" size="small" onClick={() => markRead(n.id)}>Dismiss</Button>]}
+              style={{ cursor: 'pointer' }}
+            >
+              <List.Item.Meta
+                title={<Typography.Text strong style={{ fontSize: 12 }}>{n.title}</Typography.Text>}
+                description={<Typography.Text type="secondary" style={{ fontSize: 11 }}>{n.message}</Typography.Text>}
+              />
+            </List.Item>
+          )}
+        />
+      )}
+      <div style={{ textAlign: 'center', marginTop: 8 }}>
+        <Button type="link" size="small" onClick={async () => { await authApi.post('/notifications/read-all'); setNotifications([]); setCount(0); setOpen(false); }}>
+          Mark all read
+        </Button>
+      </div>
+    </div>
+  );
+
+  return (
+    <Popover content={content} title="Notifications" trigger="click" open={open} onOpenChange={handleOpen}>
+      <Badge count={count} size="small">
+        <Button icon={<BellOutlined />} type="text" style={{ color: '#666' }} />
+      </Badge>
+    </Popover>
+  );
 }
 
 export default function AppLayout() {
@@ -69,6 +168,7 @@ export default function AppLayout() {
   const screens = useBreakpoint();
 
   const selectedKey = getSelectedKey(location.pathname);
+  const hasMinRole = (r: string) => (ROLE_LEVEL[user?.role || ''] || 0) >= (ROLE_LEVEL[r] || 0);
 
   const handleScanned = async (code: string) => {
     setScannerOpen(false);
@@ -118,6 +218,10 @@ export default function AppLayout() {
       children: [
         { key: 'qc', label: 'QC Dashboard', onClick: () => { navigate('/qc'); setMobileMenuOpen(false); } },
         { key: 'qc-tests', label: 'QC Tests', onClick: () => { navigate('/qc/tests'); setMobileMenuOpen(false); } },
+        { key: 'qc-specs', label: 'QC Specifications', onClick: () => { navigate('/qc-specs'); setMobileMenuOpen(false); } },
+        { key: 'env-monitoring', label: 'Env. Monitoring', onClick: () => { navigate('/env-monitoring'); setMobileMenuOpen(false); } },
+        { key: 'retention', label: 'Retention Samples', onClick: () => { navigate('/retention'); setMobileMenuOpen(false); } },
+        { key: 'coa', label: 'Certificates of Analysis', onClick: () => { navigate('/coa'); setMobileMenuOpen(false); } },
       ],
     },
     {
@@ -129,6 +233,16 @@ export default function AppLayout() {
         { key: 'materials-intent', label: 'Intents', onClick: () => { navigate('/materials/intent'); setMobileMenuOpen(false); } },
         { key: 'materials-po', label: 'Purchase Orders', onClick: () => { navigate('/materials/po'); setMobileMenuOpen(false); } },
         { key: 'materials-receipts', label: 'Receipts', onClick: () => { navigate('/materials/receipts'); setMobileMenuOpen(false); } },
+      ],
+    },
+    {
+      key: 'stores-group',
+      icon: <ShoppingCartOutlined />,
+      label: 'Stores',
+      children: [
+        { key: 'vendors', label: 'Vendor Master', onClick: () => { navigate('/vendors'); setMobileMenuOpen(false); } },
+        { key: 'stock', label: 'Stock Dashboard', onClick: () => { navigate('/stock'); setMobileMenuOpen(false); } },
+        { key: 'stock-ledger', label: 'Stock Ledger', onClick: () => { navigate('/stock/ledger'); setMobileMenuOpen(false); } },
       ],
     },
     {
@@ -144,6 +258,14 @@ export default function AppLayout() {
       children: [
         { key: 'planning', label: 'Dashboard', onClick: () => { navigate('/planning'); setMobileMenuOpen(false); } },
         { key: 'planning-plans', label: 'Plans', onClick: () => { navigate('/planning/plans'); setMobileMenuOpen(false); } },
+      ],
+    },
+    {
+      key: 'compliance-group',
+      icon: <SafetyCertificateOutlined />,
+      label: 'Compliance',
+      children: [
+        { key: 'capa', label: 'CAPA', onClick: () => { navigate('/capa'); setMobileMenuOpen(false); } },
       ],
     },
     {
@@ -168,6 +290,7 @@ export default function AppLayout() {
         <Header style={{ background: '#001529', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 100 }}>
           <Typography.Text strong style={{ color: '#fff', fontSize: 15 }}>eBMR System</Typography.Text>
           <Space>
+            <NotificationBell />
             <Button icon={<ScanOutlined />} size="small" onClick={() => setScannerOpen(true)} style={{ color: '#fff', borderColor: '#fff', background: 'transparent' }} />
             <Button icon={<MenuOutlined />} size="small" onClick={() => setMobileMenuOpen(true)} style={{ color: '#fff', borderColor: '#fff', background: 'transparent' }} />
           </Space>
@@ -250,6 +373,7 @@ export default function AppLayout() {
             Electronic Batch Manufacturing Record
           </Typography.Text>
           <Space>
+            <NotificationBell />
             <Button icon={<ScanOutlined />} onClick={() => setScannerOpen(true)}>Scan</Button>
             {user && (
               <>

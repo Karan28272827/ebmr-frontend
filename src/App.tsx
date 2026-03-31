@@ -15,7 +15,7 @@ import Issues from './pages/Issues';
 import IssueDetail from './pages/IssueDetail';
 import BomDefinition from './pages/BomDefinition';
 
-// New module pages
+// Phase 1 module pages
 import SopList from './pages/sop/SopList';
 import SopDetail from './pages/sop/SopDetail';
 import SopNew from './pages/sop/SopNew';
@@ -38,6 +38,19 @@ import ProcessFlowDetail from './pages/docs/ProcessFlowDetail';
 import ProcessFlowNew from './pages/docs/ProcessFlowNew';
 import UserList from './pages/admin/UserList';
 import UserDetail from './pages/admin/UserDetail';
+
+// Phase 2/3 module pages
+import CapaList from './pages/capa/CapaList';
+import CapaDetail from './pages/capa/CapaDetail';
+import VendorList from './pages/vendor/VendorList';
+import VendorDetail from './pages/vendor/VendorDetail';
+import StockDashboard from './pages/stock/StockDashboard';
+import StockLedger from './pages/stock/StockLedger';
+import QcSpecList from './pages/qc-spec/QcSpecList';
+import QcSpecDetail from './pages/qc-spec/QcSpecDetail';
+import EnvDashboard from './pages/env-monitoring/EnvDashboard';
+import RetentionList from './pages/retention/RetentionList';
+import CoaList from './pages/coa/CoaList';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { token, loading } = useAppSelector((s) => s.auth);
@@ -85,6 +98,9 @@ export default function App() {
         <Route path="qc" element={<QcDashboard />} />
         <Route path="qc/tests" element={<QcTestsList />} />
         <Route path="qc/tests/:id" element={<QcTestDetail />} />
+        <Route path="qc-specs" element={<QcSpecList />} />
+        <Route path="qc-specs/:id" element={<QcSpecDetail />} />
+        <Route path="env-monitoring" element={<EnvDashboard />} />
 
         {/* Materials Module */}
         <Route path="materials" element={<MaterialDashboard />} />
@@ -92,6 +108,12 @@ export default function App() {
         <Route path="materials/po" element={<PoTracker />} />
         <Route path="materials/receipts" element={<ReceiptLog />} />
         <Route path="materials/receipts/:id" element={<ReceiptDetail />} />
+
+        {/* Vendors + Stock */}
+        <Route path="vendors" element={<VendorList />} />
+        <Route path="vendors/:id" element={<VendorDetail />} />
+        <Route path="stock" element={<StockDashboard />} />
+        <Route path="stock/ledger" element={<StockLedger />} />
 
         {/* BOM Module */}
         <Route path="bom" element={<BomList />} />
@@ -102,6 +124,14 @@ export default function App() {
         <Route path="planning/plans" element={<PlanList />} />
         <Route path="planning/new" element={<PlanNew />} />
         <Route path="planning/:id" element={<PlanDetail />} />
+
+        {/* CAPA Module */}
+        <Route path="capa" element={<CapaList />} />
+        <Route path="capa/:id" element={<CapaDetail />} />
+
+        {/* QC + Retention + CoA */}
+        <Route path="retention" element={<RetentionList />} />
+        <Route path="coa" element={<CoaList />} />
 
         {/* Documentation Module */}
         <Route path="docs" element={<DocsCenter />} />
