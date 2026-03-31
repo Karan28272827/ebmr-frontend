@@ -68,7 +68,10 @@ const ChatbotWidget: React.FC = () => {
     try {
       const res = await fetch(`${RAG_URL}/query/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',   // bypasses ngrok interstitial page
+        },
         body: JSON.stringify({ question, top_k: 5 }),
       });
 
