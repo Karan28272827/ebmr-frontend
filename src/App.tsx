@@ -1,5 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+
+const ChatbotWidget = lazy(() => import('./components/chatbot/ChatbotWidget'));
 import { Spin } from 'antd';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { restoreAuth } from './store/authSlice';
@@ -66,6 +68,7 @@ export default function App() {
   }, [dispatch]);
 
   return (
+    <>
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route
@@ -143,5 +146,11 @@ export default function App() {
         <Route path="admin/users/:id" element={<UserDetail />} />
       </Route>
     </Routes>
+
+    {/* Chatbot — lazy-loaded, isolated, outside router — never interferes with any route */}
+    <Suspense fallback={null}>
+      <ChatbotWidget />
+    </Suspense>
+    </>
   );
 }
