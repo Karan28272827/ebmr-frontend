@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Input, Spin, Tag, Tooltip, Button } from 'antd';
+import { authApi } from '../../api/axios';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -19,10 +20,6 @@ interface Message {
   timestamp: Date;
   isLoading?: boolean;
 }
-
-// ── Constants ──────────────────────────────────────────────────────────────────
-
-const RAG_URL = (import.meta as any).env?.VITE_RAG_SERVICE_URL || 'http://localhost:8000';
 
 const SOURCE_LABELS: Record<string, { label: string; color: string }> = {
   sop: { label: 'SOP', color: 'blue' },
@@ -66,17 +63,8 @@ const ChatbotWidget: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await fetch(`${RAG_URL}/query/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true', // bypasses ngrok interstitial page
-        },
-        body: JSON.stringify({ question, top_k: 5 }),
-      });
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const res = await authApi.post('/rag/query', { question, top_k: 5 });
+      const data = res.data;
 
       setMessages((prev) =>
         prev.map((m) =>
